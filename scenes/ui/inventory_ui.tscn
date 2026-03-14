@@ -1,0 +1,60 @@
+[gd_scene format=3 uid="uid://c5sgp4nqrcpj6"]
+
+[ext_resource type="Script" uid="uid://tooq05gxaib4" path="res://scripts/ui/inventory_ui.gd" id="1_7nagc"]
+
+[node name="InventoryUI" type="CanvasLayer" unique_id=1794494713]
+script = ExtResource("1_7nagc")
+
+[node name="Root" type="Panel" parent="." unique_id=1212299031]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -180.0
+offset_top = -140.0
+offset_right = 180.0
+offset_bottom = 140.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBox" type="VBoxContainer" parent="Root" unique_id=1696006268]
+layout_mode = 0
+offset_left = 12.0
+offset_top = 12.0
+offset_right = 52.0
+offset_bottom = 52.0
+
+[node name="Label" type="Label" parent="Root/VBox" unique_id=1350170907]
+layout_mode = 2
+text = "Inventory"
+
+[node name="Grid" type="GridContainer" parent="Root/VBox" unique_id=451015076]
+layout_mode = 2
+theme_override_constants/h_separation = 4
+theme_override_constants/v_separation = 4
+columns = 5
+
+[node name="Tooltip" type="Panel" parent="." unique_id=323341340]
+custom_minimum_size = Vector2(190, 0)
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Label" type="RichTextLabel" parent="Tooltip" unique_id=1930029679]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 8.0
+offset_right = 48.0
+offset_bottom = 48.0
+bbcode_enabled = true
+fit_content = true
+
+[node name="ActionMenu" type="PopupMenu" parent="." unique_id=1254786813]
+oversampling_override = 1.0
+item_count = 2
+item_0/text = "Use"
+item_0/id = 0
+item_1/text = "Drop"
+item_1/id = 1
+
+[connection signal="id_pressed" from="ActionMenu" to="." method="_on_action_menu_id_pressed"]

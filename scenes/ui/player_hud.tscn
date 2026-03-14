@@ -1,0 +1,63 @@
+[gd_scene format=3 uid="uid://bbwqu0xdwglvu"]
+
+[ext_resource type="Script" uid="uid://b0e7judnqflni" path="res://scripts/ui/player_hud.gd" id="1_e6e0b"]
+
+[node name="PlayerHUD" type="CanvasLayer" unique_id=1976397694]
+script = ExtResource("1_e6e0b")
+
+[node name="Panel" type="Panel" parent="." unique_id=16257136]
+offset_right = 220.0
+offset_bottom = 180.0
+
+[node name="VBox" type="VBoxContainer" parent="Panel" unique_id=286092543]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 10.0
+offset_right = 50.0
+offset_bottom = 115.0
+theme_override_constants/separation = 6
+
+[node name="HPRow" type="HBoxContainer" parent="Panel/VBox" unique_id=1681898596]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="Label" type="Label" parent="Panel/VBox/HPRow" unique_id=305801069]
+custom_minimum_size = Vector2(26, 0)
+layout_mode = 2
+text = "HP"
+
+[node name="HPBar" type="ProgressBar" parent="Panel/VBox/HPRow" unique_id=476120430]
+custom_minimum_size = Vector2(160, 12)
+layout_mode = 2
+size_flags_vertical = 4
+value = 50.0
+show_percentage = false
+
+[node name="ManaRow" type="HBoxContainer" parent="Panel/VBox" unique_id=1693535446]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="Label" type="Label" parent="Panel/VBox/ManaRow" unique_id=555016369]
+custom_minimum_size = Vector2(26, 0)
+layout_mode = 2
+text = "MP"
+
+[node name="HPBar" type="ProgressBar" parent="Panel/VBox/ManaRow" unique_id=328228105]
+custom_minimum_size = Vector2(160, 12)
+layout_mode = 2
+size_flags_vertical = 4
+show_percentage = false
+
+[node name="HSeparator" type="HSeparator" parent="Panel/VBox" unique_id=2026522190]
+layout_mode = 2
+
+[node name="StatsLabel" type="RichTextLabel" parent="Panel/VBox" unique_id=189594294]
+layout_mode = 2
+bbcode_enabled = true
+fit_content = true
+
+[node name="HSeparator2" type="HSeparator" parent="Panel/VBox" unique_id=173647574]
+layout_mode = 2
+
+[node name="WeaponLabel" type="Label" parent="Panel/VBox" unique_id=1724187402]
+layout_mode = 2

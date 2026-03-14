@@ -11,9 +11,13 @@ config_version=5
 [application]
 
 config/name="Claude-Godot2"
-run/main_scene="uid://dppyhis2p5evt"
+run/main_scene="uid://cv6ecn672l5hi"
 config/features=PackedStringArray("4.6", "GL Compatibility")
 config/icon="res://assets/sprites/icon.svg"
+
+[autoload]
+
+LoadingScreen="*uid://dmgb888gru6t3"
 
 [display]
 

@@ -2,6 +2,7 @@
 
 [ext_resource type="Texture2D" uid="uid://c16un3gk0gmte" path="res://assets/sprites/icon.svg" id="1_8afob"]
 [ext_resource type="Script" uid="uid://bix75jarjxqjr" path="res://scripts/player/player.gd" id="1_dovo2"]
+[ext_resource type="Script" uid="uid://cpo07w6suq576" path="res://scripts/player/weapon_holder.gd" id="3_gmlin"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_dovo2"]
 radius = 16.0
@@ -19,3 +20,7 @@ shape = SubResource("CapsuleShape2D_dovo2")
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=235473467]
 zoom = Vector2(2, 2)
+
+[node name="WeaponHolder2" type="Node2D" parent="." unique_id=155194099]
+script = ExtResource("3_gmlin")
+metadata/_custom_type_script = "uid://cpo07w6suq576"

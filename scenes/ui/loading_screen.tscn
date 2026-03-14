@@ -1,0 +1,35 @@
+[gd_scene format=3 uid="uid://bs63yoaymsh1s"]
+
+[ext_resource type="Script" uid="uid://dmgb888gru6t3" path="res://scripts/ui/loading_screen.gd" id="1_rqdcv"]
+
+[node name="LoadingScreen" type="CanvasLayer" unique_id=1157133927]
+script = ExtResource("1_rqdcv")
+
+[node name="Panel" type="Panel" parent="." unique_id=1666860815]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBox" type="VBoxContainer" parent="Panel" unique_id=1567173715]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -2.0
+offset_top = -27.0
+offset_right = 2.0
+offset_bottom = 27.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Label" type="Label" parent="Panel/VBox" unique_id=462226117]
+layout_mode = 2
+text = "Loading level..."
+
+[node name="Bar" type="ProgressBar" parent="Panel/VBox" unique_id=1242357227]
+layout_mode = 2
+show_percentage = false
