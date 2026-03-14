@@ -6,12 +6,12 @@ const COLS       := 5
 const GAP        := 4
 const C_SLOT     := Color(0.18, 0.18, 0.24)
 const C_HOVER    := Color(0.28, 0.28, 0.36)
-const C_SELECTED := Color(0.35, 0.55, 0.9)
+const C_SELECTED := Color(0.35, 0.55, 0.90)
 
-@onready var grid:          GridContainer  = $Root/VBox/Grid
-@onready var tooltip:       Panel          = $Tooltip
-@onready var tooltip_label: RichTextLabel  = $Tooltip/Label
-@onready var action_menu:   PopupMenu      = $ActionMenu
+@onready var grid:          GridContainer = $Root/VBox/Grid
+@onready var tooltip:       Panel         = $Tooltip
+@onready var tooltip_label: RichTextLabel = $Tooltip/Label
+@onready var action_menu:   PopupMenu     = $ActionMenu
 
 signal slot_selected(slot: int)
 signal item_used_from_ui(slot: int)
@@ -19,19 +19,21 @@ signal item_dropped_from_ui(slot: int)
 
 var _inventory:   Inventory = null
 var _user:        Node      = null
-var _slots:       Array     = []
+var _panels:      Array     = []
 var _selected:    int       = -1
 var _hovered:     int       = -1
 var _action_slot: int       = -1
 
-var _dropped_item_scene := preload("res://scenes/world/dropped_item.tscn")
+const DROPPED_ITEM_SCENE := preload("res://scenes/world/dropped_item.tscn")
 
+
+# ── Setup ────────────────────────────────────────────────
 
 func setup(inv: Inventory, user: Node) -> void:
 	_inventory = inv
 	_user      = user
-	inv.item_added.connect(_on_changed)
-	inv.item_removed.connect(_on_changed)
+	inv.item_added.connect(_on_slot_changed)
+	inv.item_removed.connect(_on_slot_changed)
 	inv.stack_changed.connect(_on_stack_changed)
 	_build_slots()
 	tooltip.hide()
@@ -49,52 +51,50 @@ func toggle() -> void:
 func _build_slots() -> void:
 	for child in grid.get_children():
 		child.queue_free()
-	_slots.clear()
-
+	_panels.clear()
 	for i in _inventory.capacity:
-		_slots.append(_build_slot(i))
+		_panels.append(_build_slot(i))
 
 
-func _build_slot(index: int) -> Panel:
-	var slot := Panel.new()
-	slot.custom_minimum_size = Vector2(SLOT_SIZE, SLOT_SIZE)
-	_style(slot, C_SLOT, 4)
-	grid.add_child(slot)
+func _build_slot(i: int) -> Panel:
+	var panel := Panel.new()
+	panel.custom_minimum_size = Vector2(SLOT_SIZE, SLOT_SIZE)
+	_style(panel, C_SLOT, 4)
 
 	var icon := TextureRect.new()
 	icon.name         = "Icon"
 	icon.set_anchors_preset(Control.PRESET_FULL_RECT)
 	icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	slot.add_child(icon)
+	panel.add_child(icon)
 
 	var count := Label.new()
-	count.name = "Count"
+	count.name         = "Count"
 	count.set_anchors_preset(Control.PRESET_BOTTOM_RIGHT)
-	count.position = Vector2(-22, -18)
+	count.position     = Vector2(-22, -18)
+	count.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	count.add_theme_color_override("font_color", Color.WHITE)
 	count.add_theme_font_size_override("font_size", 11)
-	count.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	slot.add_child(count)
+	panel.add_child(count)
 
-	slot.mouse_filter = Control.MOUSE_FILTER_STOP
-	slot.mouse_entered.connect(_on_hover.bind(index))
-	slot.mouse_exited.connect(_on_hover_end.bind(index))
-	slot.gui_input.connect(_on_slot_input.bind(index))
-
-	return slot
+	panel.mouse_filter = Control.MOUSE_FILTER_STOP
+	panel.mouse_entered.connect(_on_hover.bind(i))
+	panel.mouse_exited.connect(_on_hover_end.bind(i))
+	panel.gui_input.connect(_on_slot_input.bind(i))
+	grid.add_child(panel)
+	return panel
 
 
 # ── Refresh ──────────────────────────────────────────────
 
 func _refresh_all() -> void:
-	for i in _slots.size():
+	for i in _panels.size():
 		_refresh_slot(i)
 
 
 func _refresh_slot(i: int) -> void:
-	if i >= _slots.size():
+	if i >= _panels.size():
 		return
-	var panel := _slots[i] as Panel
+	var panel := _panels[i]       as Panel
 	var icon  := panel.get_node("Icon")  as TextureRect
 	var count := panel.get_node("Count") as Label
 	var entry := _inventory.get_slot(i)
@@ -111,9 +111,8 @@ func _refresh_slot(i: int) -> void:
 	_style(panel, c, 4)
 
 
-func _on_changed(_item: Item, slot: int) -> void:
+func _on_slot_changed(_item: Item, slot: int) -> void:
 	_refresh_slot(slot)
-
 
 func _on_stack_changed(slot: int, _count: int) -> void:
 	_refresh_slot(slot)
@@ -126,20 +125,18 @@ func _on_hover(i: int) -> void:
 	_refresh_slot(i)
 	_show_tooltip(i)
 
-
 func _on_hover_end(i: int) -> void:
 	_hovered = -1
 	_refresh_slot(i)
 	tooltip.hide()
-
 
 func _on_slot_input(event: InputEvent, i: int) -> void:
 	if not (event is InputEventMouseButton and event.pressed):
 		return
 	match event.button_index:
 		MOUSE_BUTTON_LEFT:
-			var prev := _selected
-			_selected = i if _selected != i else -1
+			var prev  := _selected
+			_selected  = i if _selected != i else -1
 			if prev != -1: _refresh_slot(prev)
 			_refresh_slot(i)
 			slot_selected.emit(_selected)
@@ -151,7 +148,6 @@ func _on_slot_input(event: InputEvent, i: int) -> void:
 					Vector2i.ZERO
 				))
 
-
 func _on_action_menu_id_pressed(id: int) -> void:
 	match id:
 		0: # Use
@@ -161,14 +157,18 @@ func _on_action_menu_id_pressed(id: int) -> void:
 			_drop_item(_action_slot)
 
 
+# ── Drop ─────────────────────────────────────────────────
+
 func _drop_item(slot: int) -> void:
 	var entry := _inventory.get_slot(slot)
 	if entry.is_empty():
 		return
-	var dropped := _dropped_item_scene.instantiate() as DroppedItem
+	var dropped := DROPPED_ITEM_SCENE.instantiate() as DroppedItem
 	get_tree().current_scene.add_child(dropped)
-	var offset := Vector2(randf_range(-24.0, 24.0), randf_range(-24.0, 24.0))
-	dropped.global_position = _user.global_position + offset
+	dropped.global_position = _user.global_position + Vector2(
+		randf_range(-24.0, 24.0),
+		randf_range(-24.0, 24.0)
+	)
 	dropped.setup(entry.item, entry.count)
 	_inventory.remove_at(slot, entry.count)
 	item_dropped_from_ui.emit(slot)
@@ -182,6 +182,18 @@ func _show_tooltip(i: int) -> void:
 		tooltip.hide()
 		return
 
+	tooltip_label.text = _build_tooltip_text(entry)
+	tooltip.show()
+
+	var mp := get_viewport().get_mouse_position()
+	var vs := get_viewport().get_visible_rect().size
+	var tx := mp.x + 16.0
+	if tx + tooltip.size.x > vs.x:
+		tx = mp.x - tooltip.size.x - 8.0
+	tooltip.position = Vector2(tx, clampf(mp.y, 0.0, vs.y - tooltip.size.y))
+
+
+func _build_tooltip_text(entry: InventorySlot) -> String:
 	var item := entry.item
 	var t    := "[b]%s[/b]\n" % item.name
 
@@ -189,33 +201,12 @@ func _show_tooltip(i: int) -> void:
 		t += "[color=#aaaaaa]%s[/color]\n" % item.description
 
 	if item is WeaponItem:
-		var w := item as WeaponItem
-		t += "\n[color=#ffdd88]─ Weapon ─[/color]\n"
-		t += "Type:   %s\n"   % WeaponItem.WeaponType.keys()[w.weapon_type]
-		t += "Damage: [color=#ff9966]%.1f[/color]\n" % w.damage
-		t += "Speed:  [color=#99ff99]%.2f/s[/color]\n" % w.attack_speed
-		if w.knockback > 0.0:
-			t += "Knockback: %.0f\n" % w.knockback
-		if item is MeleeWeapon:
-			var m := item as MeleeWeapon
-			t += "Range:  %.0f px\n" % m.range
-			t += "Arc:    %.0f°\n"   % m.hit_angle
-			if m.pierce_count > 1:
-				t += "Pierce: %d targets\n" % m.pierce_count
-		if item is RangedWeapon:
-			var r := item as RangedWeapon
-			t += "Proj. speed: %.0f\n" % r.projectile_speed
-			t += "Proj. range: %.0f\n" % r.projectile_range
-			if r.ammo_type != "":
-				t += "Ammo: [color=#ffcc66]%s[/color]\n" % r.ammo_type
-		if item is StaffWeapon:
-			var s := item as StaffWeapon
-			t += "Mana cost: [color=#8899ff]%.1f[/color]\n" % s.mana_cost
-			if s.spell_effect != "":
-				t += "Effect: [color=#cc88ff]%s (%.1fs)[/color]\n" % [s.spell_effect, s.effect_duration]
-		if item is ShieldWeapon:
-			var sh := item as ShieldWeapon
-			t += "Block: [color=#88ccff]%.0f%%[/color] absorbed\n" % (sh.block_reduction * 100.0)
+		t += _weapon_tooltip(item as WeaponItem)
+
+	if item is EquippableItem:
+		var eq := item as EquippableItem
+		t += "\n[color=#aaddff]─ Equipment ─[/color]\n"
+		t += "Slot: %s\n" % EquippableItem.EquipSlot.keys()[eq.slot]
 
 	if not item.stat_modifiers.is_empty():
 		t += "\n[color=#88ddff]─ Modifiers ─[/color]\n"
@@ -228,21 +219,53 @@ func _show_tooltip(i: int) -> void:
 	if entry.count > 1:
 		t += "\n[color=#888888]Stack: %d / %d[/color]" % [entry.count, item.max_stack]
 
-	tooltip_label.text = t
-	tooltip.show()
-	var mp := get_viewport().get_mouse_position()
-	var vs := get_viewport().get_visible_rect().size
-	var tx := mp.x + 16.0
-	if tx + tooltip.size.x > vs.x:
-		tx = mp.x - tooltip.size.x - 8.0
-	tooltip.position = Vector2(tx, clamp(mp.y, 0.0, vs.y - tooltip.size.y))
+	return t
 
 
-# ── Style helper ─────────────────────────────────────────
+func _weapon_tooltip(w: WeaponItem) -> String:
+	var t := "\n[color=#ffdd88]─ Weapon ─[/color]\n"
+	t += "Type:   %s\n"                                      % WeaponItem.WeaponType.keys()[w.weapon_type]
+	t += "Damage: [color=#ff9966]%.1f[/color]\n"             % w.damage
+	t += "Speed:  [color=#99ff99]%.2f/s[/color]\n"           % w.attack_speed
+	if w.knockback > 0.0:
+		t += "Knockback: %.0f\n"                             % w.knockback
+
+	if w is MeleeWeapon:
+		var m := w as MeleeWeapon
+		t += "Range:  %.0f px\n"                             % m.range
+		t += "Arc:    %.0f°\n"                               % m.hit_angle
+		if m.pierce_count > 1:
+			t += "Pierce: %d targets\n"                      % m.pierce_count
+
+	if w is ShieldWeapon:
+		var sh := w as ShieldWeapon
+		t += "Block: [color=#88ccff]%.0f%%[/color] absorbed\n" % (sh.block_reduction * 100.0)
+
+	if w is RangedWeapon and not (w is StaffWeapon):
+		var r := w as RangedWeapon
+		t += "Proj. speed: %.0f\n"                           % r.projectile_speed
+		t += "Proj. range: %.0f\n"                           % r.projectile_range
+		if r.ammo_type != "":
+			t += "Ammo: [color=#ffcc66]%s[/color]\n"        % r.ammo_type
+
+	if w is ThrowableWeapon:
+		var th := w as ThrowableWeapon
+		t += "Type: %s\n"                                    % ThrowableWeapon.ThrowableType.keys()[th.throwable_type]
+
+	if w is StaffWeapon:
+		var s := w as StaffWeapon
+		t += "Mana cost: [color=#8899ff]%.1f[/color]\n"     % s.mana_cost
+		if s.spell_effect != "":
+			t += "Effect: [color=#cc88ff]%s (%.1fs)[/color]\n" % [s.spell_effect, s.effect_duration]
+
+	return t
+
+
+# ── Style ────────────────────────────────────────────────
 
 func _style(node: Control, color: Color, radius: int) -> void:
 	var s := StyleBoxFlat.new()
-	s.bg_color = color
+	s.bg_color                   = color
 	s.corner_radius_top_left     = radius
 	s.corner_radius_top_right    = radius
 	s.corner_radius_bottom_left  = radius
