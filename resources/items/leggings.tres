@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="EquippableItem" format=3 uid="uid://c1q3bl6xhf5li"]
+
+[ext_resource type="Script" uid="uid://bsp4sefwe0sd7" path="res://scripts/items/equippable_item.gd" id="1_kfdox"]
+
+[resource]
+script = ExtResource("1_kfdox")
+slot = 2
+id = "leggings"
+name = "Leggings"
+description = "Leggings"
+stat_modifiers = {
+"defense": 4.0
+}
+metadata/_custom_type_script = "uid://bsp4sefwe0sd7"

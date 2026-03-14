@@ -42,7 +42,7 @@ custom_minimum_size = Vector2(26, 0)
 layout_mode = 2
 text = "MP"
 
-[node name="HPBar" type="ProgressBar" parent="Panel/VBox/ManaRow" unique_id=328228105]
+[node name="ManaBar" type="ProgressBar" parent="Panel/VBox/ManaRow" unique_id=328228105]
 custom_minimum_size = Vector2(160, 12)
 layout_mode = 2
 size_flags_vertical = 4

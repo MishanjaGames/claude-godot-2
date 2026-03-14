@@ -51,7 +51,6 @@ text = "New Game"
 
 [node name="Continue" type="Button" parent="ColorRect/VBoxContainer" unique_id=1609867468]
 layout_mode = 2
-disabled = true
 text = "Continue"
 
 [node name="Quit" type="Button" parent="ColorRect/VBoxContainer" unique_id=911347010]

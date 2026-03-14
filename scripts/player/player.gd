@@ -11,7 +11,7 @@ var _inventory_ui: InventoryUI = null
 
 
 func _ready() -> void:
-	stats.initialize({ "max_health": 120.0, "speed": 220.0 })
+	stats.initialize({ "health": 100.0, "mana": 100.0, "speed": 220.0 })
 	stats.died.connect(_on_died)
 	inventory.initialize(20)
 

@@ -29,11 +29,10 @@ func apply_type_defaults() -> void:
 func attack(user: Node, targets: Array[Node]) -> void:
 	if not can_attack():
 		return
-	if user.get("stats") != null and user.stats.has_stat("mana"):
-		if user.stats.get_stat("mana") < mana_cost:
+	if user.get("stats") != null:
+		if not user.stats.spend_mana(mana_cost):   # ← clean, returns false if not enough
 			print("[Staff] Not enough mana!")
 			return
-		user.stats.set_stat("mana", user.stats.get_stat("mana") - mana_cost)
 	_cooldown = 1.0 / attack_speed
 	_spawn_projectile(user)
 	attack_performed.emit(self, user, [])

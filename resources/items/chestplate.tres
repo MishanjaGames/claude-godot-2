@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="EquippableItem" format=3 uid="uid://bnujh6hhoj31m"]
+
+[ext_resource type="Script" uid="uid://bsp4sefwe0sd7" path="res://scripts/items/equippable_item.gd" id="1_v73vw"]
+
+[resource]
+script = ExtResource("1_v73vw")
+id = "chestplate"
+name = "Chestplate"
+description = "Chestplate"
+stat_modifiers = {
+"defense": 8.0
+}
+metadata/_custom_type_script = "uid://bsp4sefwe0sd7"

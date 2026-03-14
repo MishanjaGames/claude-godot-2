@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="EquippableItem" format=3 uid="uid://csaatcn11n8hl"]
+
+[ext_resource type="Script" uid="uid://bsp4sefwe0sd7" path="res://scripts/items/equippable_item.gd" id="1_qi7fi"]
+
+[resource]
+script = ExtResource("1_qi7fi")
+slot = 3
+id = "boots"
+name = "Boots"
+description = "Boots"
+stat_modifiers = {
+"defense": 2.0
+}
+metadata/_custom_type_script = "uid://bsp4sefwe0sd7"

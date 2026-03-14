@@ -13,8 +13,9 @@ var _stats: Stats = null
 func setup(s: Stats) -> void:
 	_stats = s
 	s.health_changed.connect(_on_health_changed)
+	s.mana_changed.connect(_on_mana_changed)   # ← new
 	s.stat_changed.connect(_on_stat_changed)
-	mana_row.visible = s.has_stat("mana")
+	mana_row.visible = s.has_stat("max_mana")  # ← was "mana", now correct
 	_refresh()
 
 
@@ -29,10 +30,9 @@ func _refresh() -> void:
 	hp_bar.max_value = _stats.get_stat("max_health")
 	hp_bar.value     = _stats.get_health()
 
-	if _stats.has_stat("mana"):
-		var max_mana: float = _stats.get_stat("max_mana") if _stats.has_stat("max_mana") else 100.0
-		mana_bar.max_value = max_mana
-		mana_bar.value     = _stats.get_stat("mana")
+	if _stats.has_stat("max_mana"):
+		mana_bar.max_value = _stats.get_stat("max_mana")
+		mana_bar.value     = _stats.get_mana()   # ← uses proper getter now
 
 	var skip := ["max_health", "mana", "max_mana"]
 	var text := ""
@@ -55,6 +55,10 @@ func _on_health_changed(current: float, maximum: float) -> void:
 	hp_bar.max_value = maximum
 	hp_bar.value     = current
 
+func _on_mana_changed(current: float, maximum: float) -> void:
+	if mana_bar != null:
+		mana_bar.max_value = maximum
+		mana_bar.value     = current
 
 func _on_stat_changed(_name: String, _old: float, _new: float) -> void:
 	_refresh()
