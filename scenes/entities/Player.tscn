@@ -1,0 +1,24 @@
+[gd_scene format=3 uid="uid://cj8i7ry4p4hqn"]
+
+[ext_resource type="Script" uid="uid://b7e1ceb26yx4n" path="res://scenes/entities/Player.gd" id="1_g13of"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_o7et6"]
+height = 28.0
+
+[node name="Player" type="CharacterBody2D" unique_id=198731728]
+script = ExtResource("1_g13of")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=786902049]
+shape = SubResource("CapsuleShape2D_o7et6")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1519056477]
+
+[node name="InteractRay" type="RayCast2D" parent="." unique_id=2088096265]
+target_position = Vector2(32, 0)
+collide_with_areas = true
+
+[node name="HurtTimer" type="Timer" parent="." unique_id=336828008]
+wait_time = 0.4
+one_shot = true
+
+[connection signal="timeout" from="HurtTimer" to="." method="_on_hurt_timer_timeout"]

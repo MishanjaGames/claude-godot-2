@@ -1,0 +1,22 @@
+[gd_scene format=3 uid="uid://cdfcnstmtxlh3"]
+
+[ext_resource type="Script" uid="uid://cwc3y0qrnyboh" path="res://scenes/entities/WorldItem.gd" id="1_wfdf0"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_3uw87"]
+radius = 12.0
+
+[node name="WorldItem" type="Area2D" unique_id=762771765]
+script = ExtResource("1_wfdf0")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1285397173]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=494350142]
+shape = SubResource("CircleShape2D_3uw87")
+
+[node name="Label" type="Label" parent="." unique_id=2076874032]
+offset_right = 40.0
+offset_bottom = 23.0
+pivot_offset = Vector2(0, -20)
+text = "Item"
+horizontal_alignment = 1
+vertical_alignment = 1

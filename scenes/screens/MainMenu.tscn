@@ -1,0 +1,61 @@
+[gd_scene format=3 uid="uid://csur6ycj4eous"]
+
+[ext_resource type="Script" uid="uid://cqns037x1kval" path="res://scenes/screens/MainMenu.gd" id="1_d0hcd"]
+
+[node name="MainMenu" type="CanvasLayer" unique_id=1597620711]
+script = ExtResource("1_d0hcd")
+
+[node name="CenterContainer" type="CenterContainer" parent="." unique_id=1908716051]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer" unique_id=836878256]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Label" type="Label" parent="CenterContainer/VBoxContainer" unique_id=1997035551]
+layout_mode = 2
+text = "2D PLAYGROUND"
+
+[node name="BtnNewGame" type="Button" parent="CenterContainer/VBoxContainer" unique_id=1623755047]
+layout_mode = 2
+text = "New Game"
+
+[node name="BtnContinue" type="Button" parent="CenterContainer/VBoxContainer" unique_id=358413253]
+layout_mode = 2
+text = "Continue"
+
+[node name="BtnSettings" type="Button" parent="CenterContainer/VBoxContainer" unique_id=308730045]
+layout_mode = 2
+text = "Settings"
+
+[node name="BtnQuit" type="Button" parent="CenterContainer/VBoxContainer" unique_id=2043617418]
+layout_mode = 2
+text = "Quit"
+
+[node name="ParallaxBackground" type="ParallaxBackground" parent="." unique_id=296283999]
+
+[node name="ParallaxLayer" type="ParallaxLayer" parent="ParallaxBackground" unique_id=16049401]
+motion_scale = Vector2(0.5, 0.5)
+
+[node name="TextureRect" type="TextureRect" parent="ParallaxBackground/ParallaxLayer" unique_id=1755541220]
+offset_right = 40.0
+offset_bottom = 40.0
+stretch_mode = 6
+
+[node name="FadeOverlay" type="ColorRect" parent="." unique_id=588362502]
+modulate = Color(1, 1, 1, 0.003921569)
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 1)
+
+[connection signal="pressed" from="CenterContainer/VBoxContainer/BtnNewGame" to="." method="_on_btn_new_game_pressed"]
+[connection signal="pressed" from="CenterContainer/VBoxContainer/BtnContinue" to="." method="_on_btn_continue_pressed"]
+[connection signal="pressed" from="CenterContainer/VBoxContainer/BtnSettings" to="." method="_on_btn_settings_pressed"]
+[connection signal="pressed" from="CenterContainer/VBoxContainer/BtnQuit" to="." method="_on_btn_quit_pressed"]

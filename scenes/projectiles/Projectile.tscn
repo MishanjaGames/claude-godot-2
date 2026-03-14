@@ -1,0 +1,24 @@
+[gd_scene format=3 uid="uid://0wxfksgn06ee"]
+
+[ext_resource type="Script" uid="uid://bw821ahcinkmo" path="res://scenes/projectiles/Projectile.gd" id="1_cjq15"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_nek0e"]
+radius = 3.0
+height = 8.0
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_hejih"]
+radius = 3.0
+height = 8.0
+
+[node name="Projectile" type="CharacterBody2D" unique_id=414542315]
+script = ExtResource("1_cjq15")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=740126887]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1973194846]
+shape = SubResource("CapsuleShape2D_nek0e")
+
+[node name="Hitbox" type="Area2D" parent="." unique_id=707051065]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hitbox" unique_id=1831621549]
+shape = SubResource("CapsuleShape2D_hejih")

@@ -1,0 +1,36 @@
+[gd_scene format=3 uid="uid://c7c06dmcxr5vq"]
+
+[ext_resource type="Script" uid="uid://cac5y6jsjn3bi" path="res://scenes/screens/LoadingScreen.gd" id="1_mqjwh"]
+
+[node name="LoadingScreen" type="CanvasLayer" unique_id=302950376]
+script = ExtResource("1_mqjwh")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=530627807]
+custom_minimum_size = Vector2(400, 80)
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -27.0
+offset_right = 20.0
+offset_bottom = 27.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="LabelStatus" type="Label" parent="VBoxContainer" unique_id=2067148442]
+layout_mode = 2
+text = "Loading . . ."
+
+[node name="ProgressBar" type="ProgressBar" parent="VBoxContainer" unique_id=1849840251]
+layout_mode = 2
+
+[node name="FadeOverlay" type="ColorRect" parent="." unique_id=548975002]
+modulate = Color(1, 1, 1, 0)
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 1)

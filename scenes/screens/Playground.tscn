@@ -1,0 +1,26 @@
+[gd_scene format=3 uid="uid://dd2o5qe6gu3vq"]
+
+[ext_resource type="Script" uid="uid://ccewpysug6mc3" path="res://scenes/screens/Playground.gd" id="1_1egmk"]
+[ext_resource type="PackedScene" uid="uid://cst605ite71bf" path="res://scenes/ui/HUD.tscn" id="2_nfp4e"]
+
+[node name="Playground" type="Node2D" unique_id=98524051]
+script = ExtResource("1_1egmk")
+
+[node name="TileMap" type="TileMap" parent="." unique_id=1543786597]
+format = 2
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=1716295390]
+limit_left = -1000
+limit_bottom = 1000
+
+[node name="SpawnPoints" type="Node2D" parent="." unique_id=225151578]
+
+[node name="PlayerSpawn" type="Marker2D" parent="SpawnPoints" unique_id=1172372006]
+
+[node name="ItemSpawn_01" type="Marker2D" parent="SpawnPoints" unique_id=1467487942]
+
+[node name="NPCLayer" type="Node2D" parent="." unique_id=466296246]
+
+[node name="ItemLayer" type="Node2D" parent="." unique_id=1243926287]
+
+[node name="HUD" parent="." unique_id=1024993156 instance=ExtResource("2_nfp4e")]
