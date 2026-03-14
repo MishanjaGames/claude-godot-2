@@ -4,6 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://cvvpqhhgfdvqb" path="res://scenes/player/player.tscn" id="2_1fp7r"]
 [ext_resource type="PackedScene" uid="uid://bbwqu0xdwglvu" path="res://scenes/ui/player_hud.tscn" id="3_6m72w"]
 [ext_resource type="PackedScene" uid="uid://c5sgp4nqrcpj6" path="res://scenes/ui/inventory_ui.tscn" id="4_v5dby"]
+[ext_resource type="PackedScene" uid="uid://c3l17spkkuyx1" path="res://scenes/ui/pause_menu.tscn" id="5_v5dby"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_gv5m4"]
 size = Vector2(1152, 40)
@@ -28,3 +29,5 @@ position = Vector2(31, 578)
 [node name="PlayerHUD" parent="." unique_id=1976397694 instance=ExtResource("3_6m72w")]
 
 [node name="InventoryUI" parent="." unique_id=1794494713 instance=ExtResource("4_v5dby")]
+
+[node name="MainMenu" parent="." unique_id=1447005879 instance=ExtResource("5_v5dby")]
