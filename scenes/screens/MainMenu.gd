@@ -22,8 +22,10 @@ func fade_in() -> void:
 	fade_overlay.modulate.a = 1.0
 	var tween = create_tween()
 	tween.tween_property(fade_overlay, "modulate:a", 0.0, 0.8)
+	tween.tween_callback(func(): fade_overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE)
 
 func fade_out_then(callable: Callable) -> void:
+	fade_overlay.mouse_filter = Control.MOUSE_FILTER_STOP
 	var tween = create_tween()
 	tween.tween_property(fade_overlay, "modulate:a", 1.0, 0.5)
 	tween.tween_callback(callable)

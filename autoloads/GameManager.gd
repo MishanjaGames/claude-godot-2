@@ -3,6 +3,7 @@
 extends Node
 
 const SAVE_PATH: String = "user://save.json"
+const LOADING_SCREEN: String = "res://scenes/screens/LoadingScreen.tscn"
 
 var current_scene_path: String = ""
 var next_scene_path: String = ""
@@ -14,6 +15,7 @@ var player_ref: Node = null   # set by Player._ready()
 func change_scene_to(path: String) -> void:
 	next_scene_path = path
 	EventBus.scene_change_requested.emit(path)
+	get_tree().change_scene_to_file(LOADING_SCREEN)
 
 ## Called by LoadingScreen when loading is complete.
 func on_scene_loaded(path: String) -> void:
