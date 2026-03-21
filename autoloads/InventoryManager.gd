@@ -3,10 +3,9 @@
 extends Node
 
 const INVENTORY_SIZE: int = 32
-const HOTBAR_SIZE: int = 8
+const HOTBAR_SIZE: int    = 8
 
-# Slots hold Item resources or null
-var slots: Array = []          # size = INVENTORY_SIZE
+var slots: Array        = []   # size = INVENTORY_SIZE, each entry: Item | null
 var hotbar_slots: Array = []   # size = HOTBAR_SIZE
 var active_hotbar_index: int = 0
 
@@ -16,11 +15,10 @@ func _ready() -> void:
 	slots.fill(null)
 	hotbar_slots.fill(null)
 
-# ── Public API ────────────────────────────────────────────────────────────────
+# ── Public API ─────────────────────────────────────────────────────────────────
 
 ## Adds item to the first available slot. Returns true on success.
 func add_item(item: Resource) -> bool:
-	# Try stacking first
 	if item.stackable:
 		for i in INVENTORY_SIZE:
 			var s = slots[i]
@@ -29,7 +27,6 @@ func add_item(item: Resource) -> bool:
 				EventBus.inventory_item_added.emit(s, i)
 				return true
 
-	# Find empty slot
 	for i in INVENTORY_SIZE:
 		if slots[i] == null:
 			var new_item = item.duplicate()
@@ -38,10 +35,10 @@ func add_item(item: Resource) -> bool:
 			EventBus.inventory_item_added.emit(new_item, i)
 			return true
 
-	push_warning("InventoryManager: Inventory full, cannot add item.")
+	push_warning("InventoryManager: Inventory full.")
 	return false
 
-## Removes item at slot_index. Returns the removed item or null.
+## Removes and returns the item at slot_index, or null.
 func remove_item(slot_index: int) -> Resource:
 	if slot_index < 0 or slot_index >= INVENTORY_SIZE:
 		return null
@@ -52,20 +49,20 @@ func remove_item(slot_index: int) -> Resource:
 	EventBus.inventory_item_removed.emit(item, slot_index)
 	return item
 
-## Returns true if inventory contains at least one item with matching id.
+## Returns true if inventory contains at least one item with the given id.
 func has_item(item_id: String) -> bool:
 	for s in slots:
 		if s != null and s.id == item_id:
 			return true
 	return false
 
-## Moves item from one slot to another (swap if destination occupied).
+## Swaps items between two slot indices.
 func move_item(from_index: int, to_index: int) -> void:
 	var temp = slots[to_index]
-	slots[to_index] = slots[from_index]
+	slots[to_index]   = slots[from_index]
 	slots[from_index] = temp
 
-## Equip slot item to hotbar position.
+## Assigns the item at slot_index to a hotbar position.
 func assign_to_hotbar(slot_index: int, hotbar_index: int) -> void:
 	if hotbar_index < 0 or hotbar_index >= HOTBAR_SIZE:
 		return
@@ -76,15 +73,25 @@ func assign_to_hotbar(slot_index: int, hotbar_index: int) -> void:
 func get_active_item() -> Resource:
 	return hotbar_slots[active_hotbar_index]
 
-## Cycles through hotbar slots (call from player input).
+## Sets the active hotbar index and emits the changed signal.
 func set_active_hotbar(index: int) -> void:
 	active_hotbar_index = clamp(index, 0, HOTBAR_SIZE - 1)
 	EventBus.hotbar_slot_changed.emit(active_hotbar_index, get_active_item())
 
-# ── Save / Load helpers ───────────────────────────────────────────────────────
+## Clears all slots and hotbar slots.
+func clear() -> void:
+	slots.fill(null)
+	hotbar_slots.fill(null)
+	active_hotbar_index = 0
+
+# ── Save / Load ────────────────────────────────────────────────────────────────
 
 func serialize() -> Dictionary:
-	var data: Dictionary = {"slots": [], "hotbar": [], "active_hotbar": active_hotbar_index}
+	var data: Dictionary = {
+		"slots":         [],
+		"hotbar":        [],
+		"active_hotbar": active_hotbar_index
+	}
 	for s in slots:
 		data["slots"].append(null if s == null else {"id": s.id, "quantity": s.quantity})
 	for h in hotbar_slots:
@@ -92,7 +99,27 @@ func serialize() -> Dictionary:
 	return data
 
 func deserialize(data: Dictionary) -> void:
-	# NOTE: Full deserialization requires an item database lookup (not included here).
-	# Implement ItemDatabase.gd that maps id → Item resource, then populate slots from data.
+	clear()
 	active_hotbar_index = data.get("active_hotbar", 0)
-	push_warning("InventoryManager.deserialize: Implement ItemDatabase lookup to restore items.")
+
+	var raw_slots: Array  = data.get("slots",  [])
+	var raw_hotbar: Array = data.get("hotbar", [])
+
+	for i in mini(raw_slots.size(), INVENTORY_SIZE):
+		var entry = raw_slots[i]
+		if entry == null:
+			continue
+		var item = ItemDatabase.get_item(entry.get("id", ""))
+		if item != null:
+			item.quantity = entry.get("quantity", 1)
+			slots[i] = item
+
+	for i in mini(raw_hotbar.size(), HOTBAR_SIZE):
+		var entry = raw_hotbar[i]
+		if entry == null:
+			continue
+		var item = ItemDatabase.get_item(entry.get("id", ""))
+		if item != null:
+			item.quantity = entry.get("quantity", 1)
+			hotbar_slots[i] = item
+			EventBus.hotbar_slot_changed.emit(i, hotbar_slots[i])

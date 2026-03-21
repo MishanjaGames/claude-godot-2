@@ -1,0 +1,379 @@
+[gd_scene format=3 uid="uid://bo40x545aelbm"]
+
+[ext_resource type="Script" uid="uid://drkti6gjsw7wp" path="res://scenes/screens/SettingsScreen.gd" id="1_r6oxi"]
+
+; ── Sub-resources ─────────────────────────────────────────────────────────────
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
+bg_color = Color(0.102, 0.102, 0.180, 1)
+border_color = Color(0.878, 0.769, 0.424, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+content_margin_left = 28.0
+content_margin_top = 20.0
+content_margin_right = 28.0
+content_margin_bottom = 20.0
+
+[sub_resource type="StyleBoxLine" id="StyleBoxLine_sep"]
+color = Color(0.878, 0.769, 0.424, 0.267)
+thickness = 1
+
+; Slider track (the empty background rail)
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_track"]
+bg_color = Color(0.165, 0.165, 0.290, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+content_margin_top = 4.0
+content_margin_bottom = 4.0
+
+; Slider fill (the coloured portion to the left of the handle)
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fill"]
+bg_color = Color(0.878, 0.769, 0.424, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+content_margin_top = 4.0
+content_margin_bottom = 4.0
+
+; Back button — normal
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_back_n"]
+bg_color = Color(0.165, 0.165, 0.290, 1)
+border_color = Color(0.267, 0.267, 0.400, 0.533)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+content_margin_left = 12.0
+content_margin_right = 12.0
+content_margin_top = 0.0
+content_margin_bottom = 0.0
+
+; Back button — hover
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_back_h"]
+bg_color = Color(0.227, 0.227, 0.416, 1)
+border_color = Color(0.878, 0.769, 0.424, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+content_margin_left = 12.0
+content_margin_right = 12.0
+content_margin_top = 0.0
+content_margin_bottom = 0.0
+
+; Back button — pressed
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_back_p"]
+bg_color = Color(0.102, 0.102, 0.180, 1)
+border_color = Color(0.878, 0.769, 0.424, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+content_margin_left = 12.0
+content_margin_right = 12.0
+content_margin_top = 0.0
+content_margin_bottom = 0.0
+
+; Apply button — normal (gold-tinted, marks primary action)
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_apply_n"]
+bg_color = Color(0.239, 0.188, 0.0, 1)
+border_color = Color(0.878, 0.769, 0.424, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+content_margin_left = 12.0
+content_margin_right = 12.0
+content_margin_top = 0.0
+content_margin_bottom = 0.0
+
+; Apply button — hover
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_apply_h"]
+bg_color = Color(0.353, 0.282, 0.0, 1)
+border_color = Color(0.941, 0.831, 0.486, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+content_margin_left = 12.0
+content_margin_right = 12.0
+content_margin_top = 0.0
+content_margin_bottom = 0.0
+
+; Apply button — pressed
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_apply_p"]
+bg_color = Color(0.102, 0.102, 0.0, 1)
+border_color = Color(0.878, 0.769, 0.424, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+content_margin_left = 12.0
+content_margin_right = 12.0
+content_margin_top = 0.0
+content_margin_bottom = 0.0
+
+; Transparent focus style (removes default dotted focus outline)
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_focus"]
+
+; ── Scene tree ────────────────────────────────────────────────────────────────
+
+[node name="SettingsScreen" type="CanvasLayer" unique_id=398171892]
+layer = 11
+script = ExtResource("1_r6oxi")
+
+[node name="Backdrop" type="ColorRect" parent="." unique_id=200000001]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.733)
+mouse_filter = 0
+
+[node name="Panel" type="PanelContainer" parent="." unique_id=1010044679]
+custom_minimum_size = Vector2(400, 460)
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -200.0
+offset_top = -230.0
+offset_right = 200.0
+offset_bottom = 230.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(200, 230)
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="MarginContainer" type="MarginContainer" parent="Panel" unique_id=280922608]
+layout_mode = 2
+theme_override_constants/margin_left = 28
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 28
+theme_override_constants/margin_bottom = 20
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Panel/MarginContainer" unique_id=1720256372]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+; ── Title ─────────────────────────────────────────────────────────────────────
+
+[node name="LabelTitle" type="Label" parent="Panel/MarginContainer/VBoxContainer" unique_id=200000002]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 40)
+text = "SETTINGS"
+horizontal_alignment = 1
+vertical_alignment = 1
+theme_override_font_sizes/font_size = 24
+theme_override_colors/font_color = Color(0.878, 0.769, 0.424, 1)
+
+[node name="Separator" type="HSeparator" parent="Panel/MarginContainer/VBoxContainer" unique_id=200000003]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 6)
+theme_override_styles/separator = SubResource("StyleBoxLine_sep")
+
+; ── Master volume row ─────────────────────────────────────────────────────────
+
+[node name="MasterRow" type="HBoxContainer" parent="Panel/MarginContainer/VBoxContainer" unique_id=512155787]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="LabelMasterName" type="Label" parent="Panel/MarginContainer/VBoxContainer/MasterRow" unique_id=307381089]
+layout_mode = 2
+custom_minimum_size = Vector2(72, 0)
+text = "Master"
+vertical_alignment = 1
+theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(0.784, 0.784, 0.910, 1)
+
+[node name="SliderMaster" type="HSlider" parent="Panel/MarginContainer/VBoxContainer/MasterRow" unique_id=1988803565]
+layout_mode = 2
+custom_minimum_size = Vector2(180, 20)
+size_flags_horizontal = 3
+min_value = 0.0
+max_value = 1.0
+step = 0.01
+value = 1.0
+theme_override_styles/slider = SubResource("StyleBoxFlat_track")
+theme_override_styles/grabber_area = SubResource("StyleBoxFlat_fill")
+theme_override_styles/grabber_area_highlight = SubResource("StyleBoxFlat_fill")
+
+[node name="LabelMaster" type="Label" parent="Panel/MarginContainer/VBoxContainer/MasterRow" unique_id=85550059]
+layout_mode = 2
+custom_minimum_size = Vector2(40, 0)
+text = "100%"
+horizontal_alignment = 2
+vertical_alignment = 1
+theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(0.878, 0.769, 0.424, 1)
+
+; ── SFX volume row ────────────────────────────────────────────────────────────
+
+[node name="SFXRow" type="HBoxContainer" parent="Panel/MarginContainer/VBoxContainer" unique_id=1266816831]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="LabelSFXName" type="Label" parent="Panel/MarginContainer/VBoxContainer/SFXRow" unique_id=881647577]
+layout_mode = 2
+custom_minimum_size = Vector2(72, 0)
+text = "SFX"
+vertical_alignment = 1
+theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(0.784, 0.784, 0.910, 1)
+
+[node name="SliderSFX" type="HSlider" parent="Panel/MarginContainer/VBoxContainer/SFXRow" unique_id=1783860595]
+layout_mode = 2
+custom_minimum_size = Vector2(180, 20)
+size_flags_horizontal = 3
+min_value = 0.0
+max_value = 1.0
+step = 0.01
+value = 1.0
+theme_override_styles/slider = SubResource("StyleBoxFlat_track")
+theme_override_styles/grabber_area = SubResource("StyleBoxFlat_fill")
+theme_override_styles/grabber_area_highlight = SubResource("StyleBoxFlat_fill")
+
+[node name="LabelSFX" type="Label" parent="Panel/MarginContainer/VBoxContainer/SFXRow" unique_id=1831071914]
+layout_mode = 2
+custom_minimum_size = Vector2(40, 0)
+text = "100%"
+horizontal_alignment = 2
+vertical_alignment = 1
+theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(0.878, 0.769, 0.424, 1)
+
+; ── Music volume row ──────────────────────────────────────────────────────────
+
+[node name="MusicRow" type="HBoxContainer" parent="Panel/MarginContainer/VBoxContainer" unique_id=623554753]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="LabelMusicName" type="Label" parent="Panel/MarginContainer/VBoxContainer/MusicRow" unique_id=1497384663]
+layout_mode = 2
+custom_minimum_size = Vector2(72, 0)
+text = "Music"
+vertical_alignment = 1
+theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(0.784, 0.784, 0.910, 1)
+
+[node name="SliderMusic" type="HSlider" parent="Panel/MarginContainer/VBoxContainer/MusicRow" unique_id=1197608710]
+layout_mode = 2
+custom_minimum_size = Vector2(180, 20)
+size_flags_horizontal = 3
+min_value = 0.0
+max_value = 1.0
+step = 0.01
+value = 0.8
+theme_override_styles/slider = SubResource("StyleBoxFlat_track")
+theme_override_styles/grabber_area = SubResource("StyleBoxFlat_fill")
+theme_override_styles/grabber_area_highlight = SubResource("StyleBoxFlat_fill")
+
+[node name="LabelMusic" type="Label" parent="Panel/MarginContainer/VBoxContainer/MusicRow" unique_id=2066136496]
+layout_mode = 2
+custom_minimum_size = Vector2(40, 0)
+text = "80%"
+horizontal_alignment = 2
+vertical_alignment = 1
+theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(0.878, 0.769, 0.424, 1)
+
+; ── Separator + fullscreen toggle ─────────────────────────────────────────────
+
+[node name="Separator2" type="HSeparator" parent="Panel/MarginContainer/VBoxContainer" unique_id=200000004]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 6)
+theme_override_styles/separator = SubResource("StyleBoxLine_sep")
+
+[node name="CheckFullscreen" type="CheckButton" parent="Panel/MarginContainer/VBoxContainer" unique_id=378389661]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 36)
+text = "Fullscreen"
+button_pressed = false
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(0.784, 0.784, 0.910, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+
+[node name="Separator3" type="HSeparator" parent="Panel/MarginContainer/VBoxContainer" unique_id=200000005]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 6)
+theme_override_styles/separator = SubResource("StyleBoxLine_sep")
+
+; ── Bottom button row ─────────────────────────────────────────────────────────
+
+[node name="ButtonRow" type="HBoxContainer" parent="Panel/MarginContainer/VBoxContainer" unique_id=598802416]
+layout_mode = 2
+alignment = 2
+theme_override_constants/separation = 12
+
+[node name="BtnBack" type="Button" parent="Panel/MarginContainer/VBoxContainer/ButtonRow" unique_id=371118638]
+layout_mode = 2
+custom_minimum_size = Vector2(110, 40)
+text = "  Back"
+theme_override_styles/normal = SubResource("StyleBoxFlat_back_n")
+theme_override_styles/hover = SubResource("StyleBoxFlat_back_h")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_back_p")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_focus")
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(0.784, 0.784, 0.910, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_colors/font_pressed_color = Color(0.878, 0.769, 0.424, 1)
+theme_override_colors/font_focus_color = Color(0.784, 0.784, 0.910, 1)
+
+[node name="BtnApply" type="Button" parent="Panel/MarginContainer/VBoxContainer/ButtonRow" unique_id=50581990]
+layout_mode = 2
+custom_minimum_size = Vector2(110, 40)
+text = "  Apply"
+theme_override_styles/normal = SubResource("StyleBoxFlat_apply_n")
+theme_override_styles/hover = SubResource("StyleBoxFlat_apply_h")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_apply_p")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_focus")
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(0.878, 0.769, 0.424, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_colors/font_pressed_color = Color(0.878, 0.769, 0.424, 1)
+theme_override_colors/font_focus_color = Color(0.878, 0.769, 0.424, 1)
+
+; ── Signal connections ────────────────────────────────────────────────────────
+; Note: value_changed passes the slider value as the first arg, then the bound string key.
+
+[connection signal="value_changed" from="Panel/MarginContainer/VBoxContainer/MasterRow/SliderMaster" to="." method="_on_slider_changed" binds=["master"]]
+[connection signal="value_changed" from="Panel/MarginContainer/VBoxContainer/SFXRow/SliderSFX" to="." method="_on_slider_changed" binds=["sfx"]]
+[connection signal="value_changed" from="Panel/MarginContainer/VBoxContainer/MusicRow/SliderMusic" to="." method="_on_slider_changed" binds=["music"]]
+[connection signal="toggled" from="Panel/MarginContainer/VBoxContainer/CheckFullscreen" to="." method="_on_fullscreen_toggled"]
+[connection signal="pressed" from="Panel/MarginContainer/VBoxContainer/ButtonRow/BtnApply" to="." method="_on_apply_pressed"]
+[connection signal="pressed" from="Panel/MarginContainer/VBoxContainer/ButtonRow/BtnBack" to="." method="_on_back_pressed"]

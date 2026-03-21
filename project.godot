@@ -17,8 +17,9 @@ config/icon="res://assets/sprites/icon.svg"
 
 [autoload]
 
-GameManager="*uid://b46trl3cuj1gq"
 EventBus="*uid://dbmy5q4i6e4gd"
+GameManager="*uid://b46trl3cuj1gq"
+ItemDatabase="*uid://fvp8w3g4rfpe"
 InventoryManager="*uid://1b32dh27r24g"
 
 [display]

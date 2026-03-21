@@ -1,52 +1,51 @@
-# NPCBase.gd — Base class for all NPCs.
+# NPCBase.gd — Base class for all NPCs. Extends Entity.
 class_name NPCBase
-extends CharacterBody2D
+extends Entity
 
 enum Faction { PEACEFUL, ALLY, HOSTILE }
 
-@export var npc_name: String             = "NPC"
-@export var max_health: int              = 50
-@export var faction: Faction             = Faction.PEACEFUL
-@export var move_speed: float            = 80.0
-@export var loot_table: Resource         = null   # LootTable resource
+# ── Exports ────────────────────────────────────────────────────────────────────
+@export var npc_name: String     = "NPC"
+@export var faction: Faction     = Faction.PEACEFUL
+@export var loot_table: Resource = null   # LootTable resource
 
-var current_health: int = max_health
-var _is_dead: bool      = false
+# ── Node refs (in addition to Entity's anim_sprite + collision) ────────────────
+@onready var nav_agent: NavigationAgent2D = $NavigationAgent2D
+@onready var detection_area: Area2D       = $DetectionArea
+@onready var health_bar: ProgressBar      = $HealthBar
 
-@onready var anim_sprite: AnimatedSprite2D   = $AnimatedSprite2D
-@onready var nav_agent: NavigationAgent2D    = $NavigationAgent2D
-@onready var detection_area: Area2D          = $DetectionArea
-@onready var collision: CollisionShape2D     = $CollisionShape2D
-@onready var health_bar: ProgressBar         = $HealthBar
+# ── Entity hook ───────────────────────────────────────────────────────────────
 
-func _ready() -> void:
+func _on_entity_ready() -> void:
 	health_bar.max_value = max_health
 	health_bar.value     = max_health
 
-func take_damage(amount: int) -> void:
-	if _is_dead:
-		return
-	current_health = max(0, current_health - amount)
+# ── Entity hooks ───────────────────────────────────────────────────────────────
+
+func _on_damaged(_amount: int) -> void:
 	health_bar.value = current_health
 	anim_sprite.play("hurt")
-	if current_health <= 0:
-		die()
 
-func die() -> void:
-	_is_dead = true
+func _on_healed(_amount: int) -> void:
+	health_bar.value = current_health
+
+func _on_died() -> void:
 	anim_sprite.play("die")
-	collision.set_deferred("disabled", true)
 	EventBus.npc_died.emit(self, global_position)
 	_drop_loot()
-	await anim_sprite.animation_finished
-	queue_free()
+	# Wait for death animation before freeing
+	anim_sprite.animation_finished.connect(queue_free, CONNECT_ONE_SHOT)
+
+# ── Loot ───────────────────────────────────────────────────────────────────────
 
 func _drop_loot() -> void:
 	if loot_table == null:
 		return
 	var drops: Array = loot_table.roll()
 	for item in drops:
-		EventBus.world_item_spawned.emit(item)  # WorldScreen spawns actual node
+		EventBus.world_item_spawned.emit(item, global_position)
 
-func interact(interactor: Node) -> void:
-	pass  # Override in subclasses
+# ── Interaction (override in subclasses) ──────────────────────────────────────
+
+func interact(_interactor: Node) -> void:
+	pass
