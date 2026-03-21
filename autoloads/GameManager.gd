@@ -1,73 +1,78 @@
 # GameManager.gd
-# Global game state, scene transitions, save/load.
+# Owns scene transitions and the player reference.
+# Save/load is delegated to SaveManager.
+# LOAD ORDER: after Registry and WorldManager.
 extends Node
 
-const SAVE_PATH: String = "user://save.json"
 const LOADING_SCREEN: String = "res://scenes/screens/LoadingScreen.tscn"
+const MAIN_MENU:      String = "res://scenes/screens/MainMenu.tscn"
+const WORLD_SCENE:    String = "res://scenes/screens/World.tscn"
 
-var current_scene_path: String = ""
-var next_scene_path: String = ""
-var player_ref: Node = null   # set by Player._ready()
+# ── Runtime refs ───────────────────────────────────────────────────────────────
+## Set by Player._on_entity_ready(). Always valid while in-world.
+var player_ref:          Node   = null
+var current_scene_path:  String = ""
+var next_scene_path:     String = ""
+var is_in_world:         bool   = false
 
-# ── Scene Transitions ─────────────────────────────────────────────────────────
+# ── Game flow ──────────────────────────────────────────────────────────────────
 
-## Begin a scene change: fades out → loads via LoadingScreen → fades in.
+## Start a brand-new game with a generated seed.
+func new_game(seed: int = -1) -> void:
+	var s = seed if seed >= 0 else randi()
+	WorldManager.set_world_seed(s)
+	WorldManager.clear()
+	InventoryManager.clear()
+	SaveManager.delete_save()
+	EventBus.new_game_started.emit(s)
+	change_scene_to(WORLD_SCENE)
+
+## Resume from the most recent save.
+func continue_game() -> void:
+	if not SaveManager.has_save():
+		push_warning("GameManager.continue_game: no save file found, starting new game.")
+		new_game()
+		return
+	change_scene_to(WORLD_SCENE)   # World.tscn will call SaveManager.load_game() in _ready()
+
+## Return to the main menu without saving.
+func quit_to_menu() -> void:
+	player_ref   = null
+	is_in_world  = false
+	get_tree().paused = false
+	change_scene_to(MAIN_MENU)
+
+## Full quit to OS.
+func quit_game() -> void:
+	SaveManager.save_game()
+	get_tree().quit()
+
+# ── Scene transitions ──────────────────────────────────────────────────────────
+
+## Routes through LoadingScreen for async loading with a progress bar.
 func change_scene_to(path: String) -> void:
 	next_scene_path = path
 	EventBus.scene_change_requested.emit(path)
 	get_tree().change_scene_to_file(LOADING_SCREEN)
 
-## Called by LoadingScreen when loading is complete.
+## Called by LoadingScreen when the target scene is ready to swap in.
 func on_scene_loaded(path: String) -> void:
 	current_scene_path = path
+	is_in_world        = (path == WORLD_SCENE)
 	EventBus.scene_loaded.emit(path)
 
-# ── Save / Load ───────────────────────────────────────────────────────────────
+# ── Pause ──────────────────────────────────────────────────────────────────────
 
-func save_game() -> void:
-	if player_ref == null:
-		push_warning("GameManager.save_game: No player reference set.")
-		return
+func pause() -> void:
+	get_tree().paused = true
+	EventBus.game_paused.emit(true)
 
-	var save_data: Dictionary = {
-		"version": 1,
-		"scene": current_scene_path,
-		"player": {
-			"position_x": player_ref.global_position.x,
-			"position_y": player_ref.global_position.y,
-			"health": player_ref.current_health,
-			"stamina": player_ref.current_stamina,
-		},
-		"inventory": InventoryManager.serialize(),
-	}
+func unpause() -> void:
+	get_tree().paused = false
+	EventBus.game_paused.emit(false)
 
-	var file = FileAccess.open(SAVE_PATH, FileAccess.WRITE)
-	if file:
-		file.store_string(JSON.stringify(save_data, "\t"))
-		file.close()
-		EventBus.game_saved.emit()
+func toggle_pause() -> void:
+	if get_tree().paused:
+		unpause()
 	else:
-		push_error("GameManager.save_game: Could not open save file for writing.")
-
-func load_game() -> Dictionary:
-	if not has_save():
-		return {}
-	var file = FileAccess.open(SAVE_PATH, FileAccess.READ)
-	if file == null:
-		push_error("GameManager.load_game: Could not open save file.")
-		return {}
-	var content = file.get_as_text()
-	file.close()
-	var result = JSON.parse_string(content)
-	if result == null:
-		push_error("GameManager.load_game: JSON parse failed.")
-		return {}
-	EventBus.game_loaded.emit()
-	return result
-
-func has_save() -> bool:
-	return FileAccess.file_exists(SAVE_PATH)
-
-func delete_save() -> void:
-	if has_save():
-		DirAccess.remove_absolute(SAVE_PATH)
+		pause()

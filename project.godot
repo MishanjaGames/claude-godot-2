@@ -11,15 +11,16 @@ config_version=5
 [application]
 
 config/name="Claude-Godot2"
-run/main_scene="uid://csur6ycj4eous"
 config/features=PackedStringArray("4.6", "GL Compatibility")
 config/icon="res://assets/sprites/icon.svg"
 
 [autoload]
 
 EventBus="*uid://dbmy5q4i6e4gd"
+Registry="*uid://6byo0784rirm"
+WorldManager="*uid://clc1kfyb7fea1"
 GameManager="*uid://b46trl3cuj1gq"
-ItemDatabase="*uid://fvp8w3g4rfpe"
+SaveManager="*uid://c0wtf3whrfi5t"
 InventoryManager="*uid://1b32dh27r24g"
 
 [display]
