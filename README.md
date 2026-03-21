@@ -1,5 +1,35 @@
 # Godot 4.6.1 — Complete 2D Game Template
 
+> **Branch:** `rework` — last updated 2026-03-21
+
+---
+
+## CURRENT STATE
+
+| System | Status |
+|---|---|
+| EventBus (signal bus) | ✅ Implemented |
+| GameManager (scene transitions, save/load) | ✅ Implemented — LoadingScreen wired |
+| InventoryManager (32-slot + 8-slot hotbar) | ✅ Implemented — ⚠️ missing from project.godot autoloads |
+| Player (movement, stamina, health, interaction) | ✅ Implemented |
+| MainMenu | ✅ Implemented |
+| LoadingScreen (threaded, progress bar) | ✅ Implemented |
+| Playground (world scene) | ✅ Implemented — has placeholder floor StaticBody2D |
+| HUD (health/stamina bars, hotbar, messages) | ✅ Implemented |
+| InventoryUI (32 slots, drag-and-drop, context menu) | ✅ Implemented |
+| InventorySlot | ✅ Implemented |
+| DialogueBox | ✅ Implemented |
+| FadeOverlay | ✅ Implemented |
+| Projectile | ✅ Implemented |
+| WorldItem (pickup) | ✅ Implemented |
+| Item / ConsumableItem / KeyItem / WeaponBase | ✅ Implemented |
+| MeleeWeapon / RangedWeapon / Tool | ✅ Implemented |
+| LootTable | ✅ Implemented |
+| NPCBase | ✅ Implemented |
+| PeacefulNPC (wander + dialogue) | ✅ Implemented |
+| AllyNPC | ❌ Not yet implemented |
+| HostileNPC (patrol / chase / attack FSM) | ❌ Not yet implemented |
+
 ---
 
 ## PROJECT FOLDER STRUCTURE
@@ -7,17 +37,18 @@
 ```
 res://
 ├── autoloads/
+│   ├── EventBus.gd
 │   ├── GameManager.gd
-│   ├── InventoryManager.gd
-│   └── EventBus.gd
+│   └── InventoryManager.gd
 ├── scenes/
 │   ├── screens/
 │   │   ├── MainMenu.tscn
 │   │   ├── LoadingScreen.tscn
-│   │   └── WorldScreen.tscn
+│   │   └── Playground.tscn          ← world / gameplay scene
 │   ├── ui/
 │   │   ├── HUD.tscn
 │   │   ├── InventoryUI.tscn
+│   │   ├── InventorySlot.tscn
 │   │   ├── DialogueBox.tscn
 │   │   └── FadeOverlay.tscn
 │   ├── entities/
@@ -38,8 +69,8 @@ res://
 │   ├── npcs/
 │   │   ├── NPCBase.gd
 │   │   ├── PeacefulNPC.gd
-│   │   ├── AllyNPC.gd
-│   │   └── HostileNPC.gd
+│   │   ├── AllyNPC.gd              ← TODO: not yet created
+│   │   └── HostileNPC.gd           ← TODO: not yet created
 │   └── LootTable.gd
 └── assets/
     ├── sprites/       # placeholder — add your sprite sheets here
@@ -211,6 +242,7 @@ func deserialize(data: Dictionary) -> void:
 extends Node
 
 const SAVE_PATH: String = "user://save.json"
+const LOADING_SCREEN: String = "res://scenes/screens/LoadingScreen.tscn"
 
 var current_scene_path: String = ""
 var next_scene_path: String = ""
@@ -218,10 +250,12 @@ var player_ref: Node = null   # set by Player._ready()
 
 # ── Scene Transitions ─────────────────────────────────────────────────────────
 
-## Begin a scene change: fades out → loads via LoadingScreen → fades in.
+## Begin a scene change: sets next_scene_path → switches to LoadingScreen,
+## which loads the target scene asynchronously with a progress bar.
 func change_scene_to(path: String) -> void:
 	next_scene_path = path
 	EventBus.scene_change_requested.emit(path)
+	get_tree().change_scene_to_file(LOADING_SCREEN)
 
 ## Called by LoadingScreen when loading is complete.
 func on_scene_loaded(path: String) -> void:
@@ -294,7 +328,7 @@ extends CanvasLayer
 @onready var parallax_bg: ParallaxBackground = $ParallaxBackground
 @onready var fade_overlay: ColorRect   = $FadeOverlay
 
-const WORLD_SCENE: String = "res://scenes/screens/WorldScreen.tscn"
+const WORLD_SCENE: String = "res://scenes/screens/Playground.tscn"
 
 func _ready() -> void:
 	btn_continue.disabled = not GameManager.has_save()
@@ -419,10 +453,10 @@ LoadingScreen  [CanvasLayer]  script=LoadingScreen.gd
 
 ---
 
-## FILE: res://scenes/screens/WorldScreen.gd
+## FILE: res://scenes/screens/Playground.gd
 
 ```gdscript
-# WorldScreen.gd
+# Playground.gd  (world / gameplay scene)
 # Sets up the play world after loading. Spawns player, registers with GameManager.
 extends Node2D
 
@@ -470,19 +504,22 @@ func _input(event: InputEvent) -> void:
 		EventBus.hud_show_message.emit("Game Saved.", 2.0)
 ```
 
-## SCENE TREE: WorldScreen.tscn
+## SCENE TREE: Playground.tscn
 
 ```
-WorldScreen  [Node2D]  script=WorldScreen.gd
+Playground  [Node2D]  script=Playground.gd
 ├── TileMap              (add your tile_set resource here)
-├── Camera2D             (position=Vector2(0,0), limit_left=-1000, limit_right=1000,
-│                         limit_top=-1000, limit_bottom=1000, zoom=Vector2(1,1))
+├── Camera2D             (limit_left=-1000, limit_right=1000,
+│                         limit_top=-1000, limit_bottom=1000)
 ├── SpawnPoints  [Node2D]
-│   ├── PlayerSpawn  [Marker2D]
-│   └── ItemSpawn_01 [Marker2D]   (add more as needed)
-├── NPCLayer     [Node2D]          (add NPC instances here at edit time)
-├── ItemLayer    [Node2D]          (add WorldItem instances here at edit time)
-└── HUD          [CanvasLayer]     (instance of HUD.tscn)
+│   ├── PlayerSpawn  [Marker2D]  (position=Vector2(100, 480))
+│   └── ItemSpawn_01 [Marker2D]
+├── NPCLayer     [Node2D]
+├── ItemLayer    [Node2D]
+├── HUD          [CanvasLayer]  (instance of HUD.tscn)
+└── StaticBody2D             ← placeholder floor
+    ├── ColorRect            (offset_right=975, offset_bottom=55)
+    └── CollisionPolygon2D
 ```
 
 ---
@@ -548,21 +585,15 @@ func _on_show_message(text: String, duration: float) -> void:
 
 ```
 HUD  [CanvasLayer]  script=HUD.gd
-├── MarginContainer  (anchors=top-wide, margin_bottom=60)
+├── MarginContainer  (anchors=top-wide, theme_override margin_bottom=60)
 │   └── TopBar  [HBoxContainer]  (separation=16)
 │       ├── HealthBar   [ProgressBar]  (min=0, max=100, value=100,
 │       │                               custom_minimum_size=Vector2(200,20))
 │       └── StaminaBar  [ProgressBar]  (min=0, max=100, value=100,
-│                                       custom_minimum_size=Vector2(150,20))
+│                                       custom_minimum_size=Vector2(200,20))
 ├── HotbarContainer  [HBoxContainer]  (anchors=bottom-center, separation=4)
 │   ├── Slot0  [TextureRect]  (custom_minimum_size=Vector2(48,48), expand_mode=FIT_WIDTH)
-│   ├── Slot1  [TextureRect]  ...
-│   ├── Slot2  [TextureRect]  ...
-│   ├── Slot3  [TextureRect]  ...
-│   ├── Slot4  [TextureRect]  ...
-│   ├── Slot5  [TextureRect]  ...
-│   ├── Slot6  [TextureRect]  ...
-│   └── Slot7  [TextureRect]  ...
+│   ├── Slot1 … Slot7  [TextureRect]  (same as Slot0)
 ├── MinimapPlaceholder  [Control]  (anchors=top-right,
 │                                   custom_minimum_size=Vector2(150,150))
 │   └── Label  (text="[Minimap]", align=center)
@@ -646,7 +677,6 @@ func _on_context_menu_id_pressed(id: int) -> void:
 					break
 		2:  # Drop — remove and spawn WorldItem at player feet
 			var dropped = InventoryManager.remove_item(_selected_slot_index)
-			# WorldItem spawning handled via EventBus listener in WorldScreen (stub)
 			EventBus.world_item_spawned.emit(dropped)
 		3:  # Inspect
 			EventBus.hud_show_message.emit(item.display_name + ": " + item.description, 4.0)
@@ -664,11 +694,10 @@ func _on_slot_drag_dropped(target_index: int) -> void:
 ---
 
 ## FILE: res://scenes/ui/InventorySlot.gd
-*(Create InventorySlot.tscn: PanelContainer > TextureRect + Label for quantity)*
+*(Scene: PanelContainer → TextureRect + QtyLabel)*
 
 ```gdscript
 # InventorySlot.gd
-# Individual slot in the inventory grid.
 extends PanelContainer
 
 signal right_clicked(slot_index: int)
@@ -703,7 +732,6 @@ func _gui_input(event: InputEvent) -> void:
 		elif event.pressed and event.button_index == MOUSE_BUTTON_LEFT and _item != null:
 			drag_started.emit(slot_index)
 
-# Called by InventoryUI drag-and-drop logic when another slot drops onto this one.
 func accept_drop(from_index: int) -> void:
 	drag_dropped.emit(from_index)
 ```
@@ -713,8 +741,7 @@ func accept_drop(from_index: int) -> void:
 ```
 InventorySlot  [PanelContainer]  script=InventorySlot.gd
 │   custom_minimum_size=Vector2(52,52)
-├── TextureRect  (name=TextureRect, expand_mode=FIT_WIDTH_PROPORTIONAL,
-│                 anchors=full rect)
+├── TextureRect  (expand_mode=FIT_WIDTH_PROPORTIONAL, anchors=full rect)
 └── QtyLabel  [Label]  (anchors=bottom-right, text="", visible=false,
                          horizontal_alignment=RIGHT)
 ```
@@ -729,7 +756,7 @@ InventoryUI  [CanvasLayer]  script=InventoryUI.gd
 │           ├── Label  (text="INVENTORY", align=center)
 │           └── GridContainer  (columns=8, separation=4)
 │               (slots populated at runtime)
-└── ContextMenu  [PopupMenu]  (hide, connected to id_pressed)
+└── ContextMenu  [PopupMenu]  (hidden, connected to id_pressed)
 ```
 
 ---
@@ -792,7 +819,7 @@ func _input(event: InputEvent) -> void:
 
 ```
 DialogueBox  [CanvasLayer]  script=DialogueBox.gd
-└── Panel  [PanelContainer]  (anchors=bottom-wide, margin_top=auto,
+└── Panel  [PanelContainer]  (anchors=bottom-wide,
                                custom_minimum_size=Vector2(0, 160))
     └── MarginContainer  (margin=12 all)
         └── VBoxContainer  (separation=6)
@@ -1065,20 +1092,16 @@ class_name MeleeWeapon
 extends WeaponBase
 
 # The wielder is expected to have an $AttackHitbox Area2D child.
-# This script activates it for one frame during swing.
 func attack(wielder: Node) -> void:
 	super.attack(wielder)
 	if wielder.has_node("AttackHitbox"):
 		var hitbox: Area2D = wielder.get_node("AttackHitbox")
 		hitbox.monitoring = true
-		# Deactivate after a short window
 		var timer = wielder.get_tree().create_timer(0.15)
 		timer.timeout.connect(func(): hitbox.monitoring = false)
-		# Damage anything in hitbox on overlap
 		for body in hitbox.get_overlapping_bodies():
 			if body != wielder and body.has_method("take_damage"):
 				body.take_damage(damage)
-				# Apply knockback
 				if "velocity" in body:
 					var dir = (body.global_position - wielder.global_position).normalized()
 					body.velocity += dir * knockback_force
@@ -1113,7 +1136,6 @@ func attack(wielder: Node) -> void:
 	var proj = PROJECTILE_SCENE.instantiate()
 	wielder.get_tree().current_scene.add_child(proj)
 	proj.global_position = wielder.global_position
-	# Fire toward mouse
 	var direction = (wielder.get_global_mouse_position() - wielder.global_position).normalized()
 	proj.setup(direction, damage)
 
@@ -1190,7 +1212,7 @@ extends Item
 enum ToolType { AXE, PICKAXE, SHOVEL, GENERIC }
 
 @export var tool_type: ToolType = ToolType.GENERIC
-@export var tool_power: int     = 1   # used by world objects to determine yield
+@export var tool_power: int     = 1
 
 func use(user: Node) -> void:
 	var pos = user.global_position if "global_position" in user else Vector2.ZERO
@@ -1250,7 +1272,7 @@ func _drop_loot() -> void:
 		return
 	var drops: Array = loot_table.roll()
 	for item in drops:
-		EventBus.world_item_spawned.emit(item)  # WorldScreen spawns actual node
+		EventBus.world_item_spawned.emit(item)
 
 func interact(interactor: Node) -> void:
 	pass  # Override in subclasses
@@ -1323,206 +1345,22 @@ func interact(interactor: Node) -> void:
 
 ---
 
-## FILE: res://scripts/npcs/AllyNPC.gd
+## FILE: res://scripts/npcs/AllyNPC.gd — ❌ NOT YET IMPLEMENTED
 
-```gdscript
-# AllyNPC.gd
-class_name AllyNPC
-extends NPCBase
-
-@export var follow_player: bool       = false
-@export var attack_damage: int        = 8
-@export var attack_range: float       = 48.0
-@export var heal_threshold: float     = 0.3   # heals self below 30% HP
-@export var self_heal_amount: int     = 15
-
-var _target: Node         = null
-var _attack_cooldown: float = 0.0
-
-func _ready() -> void:
-	super._ready()
-	faction = Faction.ALLY
-	detection_area.body_entered.connect(_on_body_entered)
-
-func _physics_process(delta: float) -> void:
-	if _is_dead:
-		return
-	_attack_cooldown = max(0.0, _attack_cooldown - delta)
-
-	# Self-heal logic
-	if float(current_health) / max_health < heal_threshold:
-		heal_self()
-
-	# Priority: attack hostile in range, else follow player
-	if _target != null and is_instance_valid(_target):
-		var dist = global_position.distance_to(_target.global_position)
-		if dist <= attack_range:
-			_attack_target()
-		else:
-			_move_toward(_target.global_position, delta)
-	elif follow_player and GameManager.player_ref != null:
-		var dist = global_position.distance_to(GameManager.player_ref.global_position)
-		if dist > 80.0:
-			_move_toward(GameManager.player_ref.global_position, delta)
-		else:
-			velocity = Vector2.ZERO
-			anim_sprite.play("idle")
-	move_and_slide()
-
-func _move_toward(target_pos: Vector2, _delta: float) -> void:
-	nav_agent.target_position = target_pos
-	if nav_agent.is_navigation_finished():
-		return
-	var dir = (nav_agent.get_next_path_position() - global_position).normalized()
-	velocity = dir * move_speed
-	anim_sprite.play("walk")
-	anim_sprite.flip_h = dir.x < 0.0
-
-func _attack_target() -> void:
-	if _attack_cooldown > 0.0:
-		return
-	_attack_cooldown = 1.0
-	if _target.has_method("take_damage"):
-		_target.take_damage(attack_damage)
-	anim_sprite.play("attack")
-
-func heal_self() -> void:
-	current_health = min(max_health, current_health + self_heal_amount)
-	health_bar.value = current_health
-
-func _on_body_entered(body: Node) -> void:
-	if body is NPCBase and body.faction == Faction.HOSTILE:
-		_target = body
-```
+> **TODO:** Create `AllyNPC.gd` extending `NPCBase`. Planned behaviour:
+> - Follows the player when `follow_player = true`
+> - Attacks `HOSTILE` faction NPCs in detection range
+> - Self-heals below a configurable HP threshold
 
 ---
 
-## FILE: res://scripts/npcs/HostileNPC.gd
+## FILE: res://scripts/npcs/HostileNPC.gd — ❌ NOT YET IMPLEMENTED
 
-```gdscript
-# HostileNPC.gd
-class_name HostileNPC
-extends NPCBase
-
-enum State { IDLE, PATROL, CHASE, ATTACK, RETURN }
-
-@export var waypoints: Array[Vector2]  = []
-@export var alert_radius: float        = 180.0
-@export var attack_radius: float       = 40.0
-@export var attack_damage: int         = 12
-@export var patrol_wait_time: float    = 1.5
-
-var _state: State               = State.IDLE
-var _current_waypoint: int      = 0
-var _patrol_timer: float        = 0.0
-var _attack_cooldown: float     = 0.0
-var _player: Node               = null
-var _home_position: Vector2
-
-func _ready() -> void:
-	super._ready()
-	faction        = Faction.HOSTILE
-	_home_position = global_position
-	_player        = GameManager.player_ref
-	if waypoints.is_empty():
-		_state = State.IDLE
-	else:
-		_state = State.PATROL
-
-func _physics_process(delta: float) -> void:
-	if _is_dead:
-		return
-	_attack_cooldown = max(0.0, _attack_cooldown - delta)
-
-	# Always try to get fresh player ref
-	if _player == null or not is_instance_valid(_player):
-		_player = GameManager.player_ref
-
-	match _state:
-		State.IDLE:
-			_tick_idle()
-		State.PATROL:
-			_tick_patrol(delta)
-		State.CHASE:
-			_tick_chase()
-		State.ATTACK:
-			_tick_attack()
-		State.RETURN:
-			_tick_return()
-	move_and_slide()
-
-func _tick_idle() -> void:
-	anim_sprite.play("idle")
-	_check_player_in_range()
-
-func _tick_patrol(delta: float) -> void:
-	_check_player_in_range()
-	if waypoints.is_empty():
-		_state = State.IDLE
-		return
-	var target = waypoints[_current_waypoint]
-	if global_position.distance_to(target) < 12.0:
-		_patrol_timer -= delta
-		anim_sprite.play("idle")
-		if _patrol_timer <= 0.0:
-			_current_waypoint = (_current_waypoint + 1) % waypoints.size()
-			_patrol_timer = patrol_wait_time
-		velocity = Vector2.ZERO
-		return
-	nav_agent.target_position = target
-	var dir = (nav_agent.get_next_path_position() - global_position).normalized()
-	velocity = dir * move_speed
-	anim_sprite.play("walk")
-	anim_sprite.flip_h = dir.x < 0.0
-
-func _tick_chase() -> void:
-	if _player == null:
-		_state = State.RETURN
-		return
-	var dist = global_position.distance_to(_player.global_position)
-	if dist > alert_radius * 1.5:
-		_state = State.RETURN
-		return
-	if dist <= attack_radius:
-		_state = State.ATTACK
-		return
-	nav_agent.target_position = _player.global_position
-	var dir = (nav_agent.get_next_path_position() - global_position).normalized()
-	velocity = dir * move_speed * 1.2
-	anim_sprite.play("walk")
-	anim_sprite.flip_h = dir.x < 0.0
-
-func _tick_attack() -> void:
-	if _player == null:
-		_state = State.RETURN
-		return
-	var dist = global_position.distance_to(_player.global_position)
-	if dist > attack_radius:
-		_state = State.CHASE
-		return
-	velocity = Vector2.ZERO
-	anim_sprite.play("attack")
-	if _attack_cooldown <= 0.0:
-		_player.take_damage(attack_damage)
-		_attack_cooldown = 1.2
-
-func _tick_return() -> void:
-	nav_agent.target_position = _home_position
-	if global_position.distance_to(_home_position) < 16.0:
-		_state = State.IDLE if waypoints.is_empty() else State.PATROL
-		velocity = Vector2.ZERO
-		return
-	var dir = (nav_agent.get_next_path_position() - global_position).normalized()
-	velocity = dir * move_speed
-	anim_sprite.play("walk")
-
-func _check_player_in_range() -> void:
-	if _player == null:
-		return
-	if global_position.distance_to(_player.global_position) <= alert_radius:
-		_state = State.CHASE
-		EventBus.npc_alerted.emit(self, _player)
-```
+> **TODO:** Create `HostileNPC.gd` extending `NPCBase`. Planned behaviour:
+> - State machine: `IDLE → PATROL → CHASE → ATTACK → RETURN`
+> - Patrols exported `waypoints: Array[Vector2]`
+> - Alerts via `EventBus.npc_alerted` when player enters `alert_radius`
+> - Returns to home position when player escapes `alert_radius * 1.5`
 
 ---
 
@@ -1546,7 +1384,6 @@ func _ready() -> void:
 	body_entered.connect(_on_body_entered)
 
 func _on_body_entered(body: Node) -> void:
-	# Auto-pickup when player walks over
 	if body == GameManager.player_ref:
 		_pickup(body)
 
@@ -1596,7 +1433,7 @@ func roll() -> Array:
 		var weight: float  = entry.get("weight", 1.0)
 		var min_q: int     = entry.get("min_qty", 1)
 		var max_q: int     = entry.get("max_qty", 1)
-		# Weighted chance: weight is treated as a 0-100 percent probability
+		# weight is treated as a 0-100 percent probability
 		if randf() * 100.0 <= weight:
 			var qty = randi_range(min_q, max_q)
 			for _i in qty:
@@ -1609,15 +1446,17 @@ func roll() -> Array:
 
 ## AUTOLOAD SETUP
 
-In **Project → Project Settings → Autoload**, add these three entries in order:
+In **Project → Project Settings → Autoload**, add these entries in order:
 
-| Name               | Path                            |
-|--------------------|---------------------------------|
-| `EventBus`         | `res://autoloads/EventBus.gd`   |
+| Name               | Path                                  |
+|--------------------|---------------------------------------|
+| `EventBus`         | `res://autoloads/EventBus.gd`         |
+| `GameManager`      | `res://autoloads/GameManager.gd`      |
 | `InventoryManager` | `res://autoloads/InventoryManager.gd` |
-| `GameManager`      | `res://autoloads/GameManager.gd` |
 
-> **Order matters**: EventBus must load before InventoryManager and GameManager, because both connect to it in `_ready()`.
+> ⚠️ **Known issue:** `InventoryManager` is currently **missing** from `project.godot`'s autoload list. Add it manually in Project Settings → Autoload.
+
+> **Order note:** EventBus should load first since GameManager and InventoryManager reference it at runtime.
 
 ---
 
@@ -1644,58 +1483,58 @@ Open **Project Settings → Input Map** and add these actions:
 
 ### C — Create Scenes (in this order)
 
-1. **FadeOverlay.tscn** — CanvasLayer, layer=128. Add ColorRect (full-rect anchor, black). Attach `FadeOverlay.gd`.
-2. **InventorySlot.tscn** — PanelContainer → TextureRect + QtyLabel. Attach `InventorySlot.gd`. Set `custom_minimum_size=(52,52)`.
+1. **FadeOverlay.tscn** — CanvasLayer (layer=128) → ColorRect (full-rect anchor, black) + AnimationPlayer. Attach `FadeOverlay.gd`.
+2. **InventorySlot.tscn** — PanelContainer → TextureRect + QtyLabel. Attach `InventorySlot.gd`. `custom_minimum_size=(52,52)`.
 3. **DialogueBox.tscn** — CanvasLayer → Panel → MarginContainer → VBoxContainer → SpeakerLabel + RichTextLabel + ContinueHint. Attach `DialogueBox.gd`.
-4. **HUD.tscn** — CanvasLayer with bars, hotbar (8 TextureRect slots named Slot0–Slot7), minimap placeholder, message label. Attach `HUD.gd`.
-5. **InventoryUI.tscn** — CanvasLayer → Panel → MarginContainer → VBoxContainer → GridContainer (columns=8). Add ContextMenu PopupMenu. Attach `InventoryUI.gd`.
+4. **HUD.tscn** — CanvasLayer with health/stamina bars, hotbar (8 TextureRect slots Slot0–Slot7), minimap placeholder, message label. Attach `HUD.gd`.
+5. **InventoryUI.tscn** — CanvasLayer → PanelContainer → MarginContainer → VBoxContainer → GridContainer (columns=8) + ContextMenu PopupMenu. Attach `InventoryUI.gd`.
 6. **Projectile.tscn** — CharacterBody2D → Sprite2D + CollisionShape2D + Hitbox (Area2D + CollisionShape2D). Attach `Projectile.gd`.
 7. **WorldItem.tscn** — Area2D → Sprite2D + CollisionShape2D + Label. Attach `WorldItem.gd`.
-8. **Player.tscn** — CharacterBody2D → CollisionShape2D + AnimatedSprite2D (add SpriteFrames with animations) + InteractRay (RayCast2D, target=Vector2(32,0)) + HurtTimer (one_shot, 0.4s). Attach `Player.gd`. Connect HurtTimer.timeout → `_on_hurt_timer_timeout`.
-9. **NPCBase.tscn** — CharacterBody2D → CollisionShape2D + AnimatedSprite2D + NavigationAgent2D + DetectionArea (Area2D + CircleShape, radius=200) + HealthBar. Do **not** attach NPCBase.gd directly — attach a subclass script (PeacefulNPC.gd, AllyNPC.gd, or HostileNPC.gd).
+8. **Player.tscn** — CharacterBody2D → CollisionShape2D + AnimatedSprite2D (SpriteFrames: idle, walk, run, hurt, die) + InteractRay (RayCast2D, target=Vector2(32,0)) + HurtTimer (one_shot=true, wait_time=0.4). Attach `Player.gd`. Connect HurtTimer.timeout → `_on_hurt_timer_timeout`.
+9. **NPCBase.tscn** — CharacterBody2D → CollisionShape2D + AnimatedSprite2D + NavigationAgent2D + DetectionArea (Area2D + CircleShape radius=200) + HealthBar. Attach a subclass script (`PeacefulNPC.gd` etc.) — do not attach `NPCBase.gd` directly.
 10. **MainMenu.tscn** — CanvasLayer → ParallaxBackground (→ ParallaxLayer → TextureRect) + CenterContainer (→ VBoxContainer → Label + 4 Buttons) + FadeOverlay ColorRect. Attach `MainMenu.gd`. Connect all button signals.
-11. **LoadingScreen.tscn** — CanvasLayer → VBoxContainer (→ LabelStatus + ProgressBar) + FadeOverlay. Attach `LoadingScreen.gd`.
-12. **WorldScreen.tscn** — Node2D → TileMap + Camera2D + SpawnPoints (→ PlayerSpawn Marker2D) + NPCLayer + ItemLayer + HUD (instance). Attach `WorldScreen.gd`.
+11. **LoadingScreen.tscn** — CanvasLayer → VBoxContainer (→ LabelStatus + ProgressBar) + FadeOverlay ColorRect. Attach `LoadingScreen.gd`.
+12. **Playground.tscn** — Node2D → TileMap + Camera2D + SpawnPoints (→ PlayerSpawn Marker2D at Vector2(100,480)) + NPCLayer + ItemLayer + HUD instance + StaticBody2D floor (ColorRect + CollisionPolygon2D). Attach `Playground.gd`.
 
 ### D — TileMap Setup
-- [ ] Select the TileMap node in WorldScreen.tscn
-- [ ] Create a TileSet resource and paint collision layers on any solid tiles
-- [ ] Add a **NavigationRegion2D** as a sibling to TileMap (or enable navigation on TileMap layers) so NavigationAgent2D works for NPCs
+- [ ] Select TileMap in Playground.tscn, create a TileSet, paint collision on solid tiles
+- [ ] Add **NavigationRegion2D** (sibling to TileMap) and bake a NavigationPolygon for NPC pathfinding
 
 ### E — Sprite / Animation Setup
-- [ ] Create a SpriteFrames resource for Player's AnimatedSprite2D
-- [ ] Add animations: `idle`, `walk`, `run`, `hurt`, `die` (use placeholder sprites or your own)
-- [ ] Repeat for any NPC AnimatedSprite2D nodes (animations: `idle`, `walk`, `hurt`, `die`, `attack`)
+- [ ] Create SpriteFrames for Player: `idle`, `walk`, `run`, `hurt`, `die`
+- [ ] Create SpriteFrames for NPCs: `idle`, `walk`, `hurt`, `die`, `attack`
 
 ### F — Set Main Scene
-- [ ] **Project Settings → Application → Run → Main Scene** → set to `res://scenes/screens/MainMenu.tscn`
+- [ ] **Project Settings → Application → Run → Main Scene** → `res://scenes/screens/MainMenu.tscn`
 
-### G — Wire Scene Transitions
-- [ ] In **GameManager.gd**, `change_scene_to()` emits `EventBus.scene_change_requested`
-- [ ] In **MainMenu.gd**, the fade callbacks call `GameManager.change_scene_to(WORLD_SCENE)` which goes to `WorldScreen.tscn` directly (for this template the LoadingScreen is called via the path — wire it by setting `GameManager.next_scene_path` and then switching to LoadingScreen.tscn first if you want the progress bar)
-- [ ] To use the LoadingScreen: in `change_scene_to()`, change `get_tree().change_scene_to_file("res://scenes/screens/LoadingScreen.tscn")` after setting `next_scene_path`
+### G — Fix InventoryManager Autoload (⚠️ required)
+- [ ] Open **Project Settings → Autoload**
+- [ ] Add `InventoryManager` → `res://autoloads/InventoryManager.gd`
+- [ ] Verify order: EventBus → GameManager → InventoryManager
 
 ### H — Create Item Resources
-- [ ] Right-click in FileSystem → **New Resource** → choose `ConsumableItem`, `KeyItem`, etc.
-- [ ] Fill in `id`, `display_name`, `description`, `icon`, etc.
-- [ ] Assign to WorldItem nodes or LootTable drops arrays
+- [ ] Right-click FileSystem → **New Resource** → `ConsumableItem`, `KeyItem`, etc.
+- [ ] Fill in `id`, `display_name`, `description`, `icon`, `stackable`, `max_stack`
+- [ ] Assign to WorldItem nodes or LootTable drop arrays
 
 ### I — LootTable Setup
-- [ ] Right-click → **New Resource** → `LootTable`
-- [ ] Populate `drops` array with dictionaries: `{"item": <Item resource>, "weight": 50.0, "min_qty": 1, "max_qty": 2}`
-- [ ] Assign the LootTable resource to HostileNPC's `loot_table` @export field
+- [ ] New Resource → `LootTable`, populate `drops` array
+- [ ] Entry format: `{"item": <Item resource>, "weight": 50.0, "min_qty": 1, "max_qty": 2}`
+- [ ] Assign to NPC `loot_table` export field
 
-### J — NavigationRegion2D (for NPC pathfinding)
-- [ ] Add a **NavigationRegion2D** node to WorldScreen
-- [ ] Draw or bake a NavigationPolygon covering walkable areas
-- [ ] Ensure NavigationAgent2D nodes in NPCs have matching navigation layer masks
+### J — NavigationRegion2D
+- [ ] Add NavigationRegion2D to Playground
+- [ ] Draw or bake NavigationPolygon over walkable areas
+- [ ] Match navigation layer masks with NavigationAgent2D nodes in NPCs
 
-### K — Final Test
-- [ ] Run the project from MainMenu
-- [ ] Verify: player spawns, moves 8-directional, camera follows
-- [ ] Pick up a WorldItem → inventory slot fills → hotbar shows icon
+### K — Implement Missing NPC Types
+- [ ] Create `res://scripts/npcs/AllyNPC.gd` (follow player + attack hostiles + self-heal)
+- [ ] Create `res://scripts/npcs/HostileNPC.gd` (IDLE/PATROL/CHASE/ATTACK/RETURN FSM)
+
+### L — Final Test
+- [ ] Run from MainMenu; confirm player spawns, moves, camera follows
+- [ ] Pick up a WorldItem → inventory slot fills, hotbar shows icon
 - [ ] Test PeacefulNPC dialogue (E key near NPC)
-- [ ] Test HostileNPC state machine (walk near alert radius)
 - [ ] Press Escape in-world to quick-save; restart and use Continue
 
 ---
