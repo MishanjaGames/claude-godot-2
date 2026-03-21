@@ -16,6 +16,7 @@ limit_bottom = 1000
 [node name="SpawnPoints" type="Node2D" parent="." unique_id=225151578]
 
 [node name="PlayerSpawn" type="Marker2D" parent="SpawnPoints" unique_id=1172372006]
+position = Vector2(100, 480)
 
 [node name="ItemSpawn_01" type="Marker2D" parent="SpawnPoints" unique_id=1467487942]
 
@@ -24,3 +25,13 @@ limit_bottom = 1000
 [node name="ItemLayer" type="Node2D" parent="." unique_id=1243926287]
 
 [node name="HUD" parent="." unique_id=1024993156 instance=ExtResource("2_nfp4e")]
+
+[node name="StaticBody2D" type="StaticBody2D" parent="." unique_id=105426375]
+position = Vector2(0, 548)
+
+[node name="ColorRect" type="ColorRect" parent="StaticBody2D" unique_id=204787709]
+offset_right = 975.0
+offset_bottom = 55.0
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="StaticBody2D" unique_id=232474727]
+polygon = PackedVector2Array(-1, 0, 979, -2, 977, 58, -1, 55)

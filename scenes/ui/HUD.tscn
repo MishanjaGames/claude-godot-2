@@ -21,7 +21,7 @@ custom_minimum_size = Vector2(200, 20)
 layout_mode = 2
 
 [node name="StaminaBar" type="ProgressBar" parent="MarginContainer/TopBar" unique_id=706042191]
-custom_minimum_size = Vector2(150, 20)
+custom_minimum_size = Vector2(200, 20)
 layout_mode = 2
 
 [node name="HotbarContainer" type="HBoxContainer" parent="." unique_id=819639197]
