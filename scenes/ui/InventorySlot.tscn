@@ -1,0 +1,45 @@
+[gd_scene format=3 uid="uid://cnhlqamipq3pt"]
+
+[ext_resource type="Script" path="res://scenes/ui/InventorySlot.gd" id="1_is"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_slot"]
+bg_color = Color(0.10, 0.10, 0.18, 0.92)
+border_color = Color(0.28, 0.28, 0.48, 0.80)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[node name="InventorySlot" type="PanelContainer"]
+custom_minimum_size = Vector2(52, 52)
+offset_right = 52.0
+offset_bottom = 52.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_slot")
+script = ExtResource("1_is")
+
+[node name="Icon" type="TextureRect" parent="."]
+layout_mode = 2
+expand_mode = 3
+stretch_mode = 5
+
+[node name="QtyLabel" type="Label" parent="."]
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 8
+horizontal_alignment = 2
+vertical_alignment = 2
+theme_override_font_sizes/font_size = 11
+
+[node name="PlaceholderLabel" type="Label" parent="."]
+visible = false
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+horizontal_alignment = 1
+vertical_alignment = 1
+theme_override_font_sizes/font_size = 10
+theme_override_colors/font_color = Color(0.6, 0.6, 0.6, 0.4)

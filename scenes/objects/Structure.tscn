@@ -1,0 +1,21 @@
+[gd_scene format=3 uid="uid://structure_001"]
+
+[ext_resource type="Script" path="res://scenes/objects/Structure.gd" id="1_struct"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_interior"]
+size = Vector2(256, 192)
+
+[node name="Structure" type="Node2D"]
+script = ExtResource("1_struct")
+
+[node name="InteriorArea" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 1
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="InteriorArea"]
+shape = SubResource("RectangleShape2D_interior")
+
+[node name="Objects" type="Node2D" parent="."]
+
+[connection signal="body_entered" from="InteriorArea" to="." method="_on_body_entered"]
+[connection signal="body_exited" from="InteriorArea" to="." method="_on_body_exited"]

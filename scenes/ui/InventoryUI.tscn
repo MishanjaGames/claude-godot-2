@@ -1,0 +1,104 @@
+[gd_scene format=3 uid="uid://inventory_ui_001"]
+
+[ext_resource type="Script" path="res://scenes/ui/InventoryUI.gd" id="1_inv"]
+[ext_resource type="PackedScene" path="res://scenes/ui/InventorySlot.tscn" id="2_slot"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
+bg_color = Color(0.09, 0.09, 0.16, 0.97)
+border_color = Color(0.50, 0.44, 0.25, 0.80)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+content_margin_left = 14.0
+content_margin_top = 14.0
+content_margin_right = 14.0
+content_margin_bottom = 14.0
+
+[node name="InventoryUI" type="CanvasLayer"]
+layer = 5
+script = ExtResource("1_inv")
+
+[node name="Root" type="PanelContainer" parent="."]
+custom_minimum_size = Vector2(520, 440)
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -260.0
+offset_top = -220.0
+offset_right = 260.0
+offset_bottom = 220.0
+grow_horizontal = 2
+grow_vertical = 2
+visible = false
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="MarginContainer" type="MarginContainer" parent="Root"]
+layout_mode = 2
+theme_override_constants/margin_left = 14
+theme_override_constants/margin_top = 14
+theme_override_constants/margin_right = 14
+theme_override_constants/margin_bottom = 14
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Root/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="TitleLabel" type="Label" parent="Root/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "INVENTORY"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.88, 0.77, 0.42, 1)
+
+[node name="ContentRow" type="HBoxContainer" parent="Root/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="BagSection" type="VBoxContainer" parent="Root/MarginContainer/VBoxContainer/ContentRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="BagLabel" type="Label" parent="Root/MarginContainer/VBoxContainer/ContentRow/BagSection"]
+layout_mode = 2
+text = "Bag"
+theme_override_font_sizes/font_size = 12
+theme_override_colors/font_color = Color(0.7, 0.7, 0.7, 1)
+
+[node name="BagGrid" type="GridContainer" parent="Root/MarginContainer/VBoxContainer/ContentRow/BagSection"]
+layout_mode = 2
+theme_override_constants/h_separation = 3
+theme_override_constants/v_separation = 3
+columns = 8
+
+[node name="EquipSection" type="VBoxContainer" parent="Root/MarginContainer/VBoxContainer/ContentRow"]
+custom_minimum_size = Vector2(116, 0)
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="EquipLabel" type="Label" parent="Root/MarginContainer/VBoxContainer/ContentRow/EquipSection"]
+layout_mode = 2
+text = "Equipment"
+theme_override_font_sizes/font_size = 12
+theme_override_colors/font_color = Color(0.7, 0.7, 0.7, 1)
+
+[node name="EquipGrid" type="GridContainer" parent="Root/MarginContainer/VBoxContainer/ContentRow/EquipSection"]
+layout_mode = 2
+theme_override_constants/h_separation = 3
+theme_override_constants/v_separation = 3
+columns = 2
+
+[node name="WeightLabel" type="Label" parent="Root/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "0.0 / 50.0 kg"
+horizontal_alignment = 2
+theme_override_font_sizes/font_size = 11
+
+[node name="ContextMenu" type="PopupMenu" parent="."]

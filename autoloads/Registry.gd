@@ -9,21 +9,20 @@
 # LOAD ORDER: after EventBus, before GameManager and InventoryManager.
 extends Node
 
-# ── Typed dictionaries (id → Resource) ────────────────────────────────────────
-var _items:        Dictionary = {}   # ItemData and all subclasses
-var _npcs:         Dictionary = {}   # NPCData
-var _biomes:       Dictionary = {}   # BiomeData
-var _harvestables: Dictionary = {}   # HarvestableData
-var _structures:   Dictionary = {}   # StructureData
-var _drop_tables:  Dictionary = {}   # DropTable
+var _items:        Dictionary = {}
+var _npcs:         Dictionary = {}
+var _biomes:       Dictionary = {}
+var _harvestables: Dictionary = {}
+var _structures:   Dictionary = {}
+var _drop_tables:  Dictionary = {}
 
-# Subfolder → target dictionary mapping
 const _FOLDERS: Array[Dictionary] = [
 	{ "path": "res://data/items/",        "dict": "_items"        },
 	{ "path": "res://data/weapons/",      "dict": "_items"        },
 	{ "path": "res://data/consumables/",  "dict": "_items"        },
 	{ "path": "res://data/armour/",       "dict": "_items"        },
 	{ "path": "res://data/key_items/",    "dict": "_items"        },
+	{ "path": "res://data/recipes/",      "dict": "_items"        },
 	{ "path": "res://data/npcs/",         "dict": "_npcs"         },
 	{ "path": "res://data/biomes/",       "dict": "_biomes"       },
 	{ "path": "res://data/harvestables/", "dict": "_harvestables" },
@@ -41,8 +40,6 @@ func _ready() -> void:
 
 # ── Public getters ─────────────────────────────────────────────────────────────
 
-## Returns a duplicate of the ItemData for `id`, or null.
-## Always duplicated so runtime quantity/state doesn't bleed between instances.
 func get_item(id: String) -> ItemData:
 	if _items.has(id):
 		return _items[id].duplicate()
@@ -79,7 +76,6 @@ func get_drop_table(id: String) -> DropTable:
 	push_warning("Registry.get_drop_table: unknown id '%s'" % id)
 	return null
 
-# ── Existence checks ──────────────────────────────────────────────────────────
 func has_item(id: String)        -> bool: return _items.has(id)
 func has_npc(id: String)         -> bool: return _npcs.has(id)
 func has_biome(id: String)       -> bool: return _biomes.has(id)
@@ -87,14 +83,11 @@ func has_harvestable(id: String) -> bool: return _harvestables.has(id)
 func has_structure(id: String)   -> bool: return _structures.has(id)
 func has_drop_table(id: String)  -> bool: return _drop_tables.has(id)
 
-# ── Bulk accessors ────────────────────────────────────────────────────────────
 func all_items()        -> Array: return _items.values()
 func all_npcs()         -> Array: return _npcs.values()
 func all_biomes()       -> Array: return _biomes.values()
 func all_harvestables() -> Array: return _harvestables.values()
 func all_structures()   -> Array: return _structures.values()
-
-# ── Runtime registration (mods / dynamic content) ─────────────────────────────
 
 func register_item(item: ItemData) -> void:
 	_register(item, _items)
@@ -105,17 +98,16 @@ func register_npc(npc: NPCData) -> void:
 # ── Internal ───────────────────────────────────────────────────────────────────
 
 func _load_folder(path: String, dict: Dictionary) -> void:
-	var dir = DirAccess.open(path)
+	var dir := DirAccess.open(path)
 	if dir == null:
-		return   # folder doesn't exist yet — fine during early development
+		return
 	dir.list_dir_begin()
-	var file_name = dir.get_next()
+	var file_name := dir.get_next()
 	while file_name != "":
 		if file_name.ends_with(".tres") or file_name.ends_with(".res"):
-			var full_path = path + file_name
-			var res = load(full_path)
+			var res := load(path + file_name)
 			if res == null:
-				push_warning("Registry: failed to load '%s'" % full_path)
+				push_warning("Registry: failed to load '%s'" % (path + file_name))
 			else:
 				_register(res, dict)
 		file_name = dir.get_next()

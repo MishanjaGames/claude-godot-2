@@ -1,0 +1,41 @@
+[gd_scene format=3 uid="uid://harvestable_001"]
+
+[ext_resource type="Script" path="res://scenes/objects/Harvestable.gd" id="1_harv"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_body"]
+size = Vector2(28, 40)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_interact"]
+size = Vector2(44, 52)
+
+[node name="Harvestable" type="StaticBody2D"]
+collision_layer = 2
+collision_mask = 0
+script = ExtResource("1_harv")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, 4)
+shape = SubResource("RectangleShape2D_body")
+
+[node name="HitParticles" type="GPUParticles2D" parent="."]
+amount = 12
+lifetime = 0.6
+one_shot = true
+explosiveness = 0.9
+emitting = false
+
+[node name="InteractArea" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 1
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="InteractArea"]
+shape = SubResource("RectangleShape2D_interact")
+
+[node name="RegrowTimer" type="Timer" parent="."]
+wait_time = 300.0
+one_shot = true
+autostart = false
+
+[connection signal="timeout" from="RegrowTimer" to="." method="_on_regrow_timer_timeout"]

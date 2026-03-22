@@ -12,9 +12,7 @@ signal player_stamina_changed(current: float, maximum: float)
 signal player_died()
 signal player_respawned(position: Vector2)
 signal player_interacted(interactable: Node)
-## Fired when the player crosses a chunk boundary.
 signal player_chunk_changed(old_chunk: Vector2i, new_chunk: Vector2i)
-## Fired when the player wraps across the world border.
 signal player_world_wrapped(old_pos: Vector2, new_pos: Vector2)
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -39,7 +37,6 @@ signal inventory_item_moved(from_index: int, to_index: int)
 signal inventory_full()
 signal hotbar_slot_changed(slot_index: int, item: Resource)
 signal active_hotbar_changed(slot_index: int)
-## Fired when armour / accessory is equipped or unequipped.
 signal equipment_changed(slot: int, item: Resource)
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -49,13 +46,11 @@ signal chunk_load_requested(chunk_coords: Vector2i)
 signal chunk_loaded(chunk_coords: Vector2i)
 signal chunk_unloaded(chunk_coords: Vector2i)
 signal world_generated(seed: int)
-## Fired when a tile is modified at runtime (mining, building, etc.)
 signal tile_changed(world_tile_pos: Vector2i, old_source: int, new_source: int)
 
 # ══════════════════════════════════════════════════════════════════════════════
 # WORLD OBJECTS
 # ══════════════════════════════════════════════════════════════════════════════
-## item: ItemData resource, position: world pixel position
 signal world_item_spawned(item: Resource, position: Vector2)
 signal world_item_picked_up(item: Resource, picker: Node)
 signal harvestable_hit(harvestable: Node, damage: int, tool_power: int)
@@ -89,7 +84,6 @@ signal npc_lost_target(npc: Node)
 signal scene_change_requested(path: String)
 signal scene_loaded(path: String)
 signal hud_show_message(text: String, duration: float)
-## Floating number popup (damage, heal, XP, etc.) at a world position.
 signal hud_show_popup(text: String, position: Vector2, color: Color)
 signal dialogue_open_requested(dialogue: Array, npc: Node)
 signal dialogue_closed()
@@ -121,3 +115,10 @@ signal level_up(new_level: int)
 signal quest_updated(quest_id: String, stage: int)
 signal quest_completed(quest_id: String)
 signal achievement_unlocked(achievement_id: String)
+
+# ══════════════════════════════════════════════════════════════════════════════
+# DAY / NIGHT
+# ══════════════════════════════════════════════════════════════════════════════
+signal day_phase_changed(new_phase: int)
+signal day_elapsed(day_number: int)
+signal time_of_day_changed(normalised_time: float)

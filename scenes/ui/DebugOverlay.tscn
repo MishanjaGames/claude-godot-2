@@ -1,0 +1,32 @@
+[gd_scene format=3 uid="uid://debug_overlay_001"]
+
+[ext_resource type="Script" path="res://scenes/ui/DebugOverlay.gd" id="1_do"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bg"]
+bg_color = Color(0.0, 0.0, 0.0, 0.75)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[node name="DebugOverlay" type="CanvasLayer"]
+layer = 127
+script = ExtResource("1_do")
+
+[node name="Panel" type="PanelContainer" parent="."]
+anchors_preset = 0
+offset_right = 270.0
+offset_bottom = 8.0
+visible = false
+theme_override_styles/panel = SubResource("StyleBoxFlat_bg")
+
+[node name="MarginContainer" type="MarginContainer" parent="Panel"]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 6
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 6
+
+[node name="Lines" type="VBoxContainer" parent="Panel/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 2

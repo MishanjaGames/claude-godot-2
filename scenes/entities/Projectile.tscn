@@ -1,0 +1,25 @@
+[gd_scene format=3 uid="uid://projectile_001"]
+
+[ext_resource type="Script" path="res://scenes/entities/Projectile.gd" id="1_proj"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_proj"]
+height = 8.0
+radius = 3.0
+
+[node name="Projectile" type="CharacterBody2D"]
+collision_layer = 4
+collision_mask = 2
+script = ExtResource("1_proj")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+rotation_degrees = 90.0
+shape = SubResource("CapsuleShape2D_proj")
+
+[node name="LifetimeTimer" type="Timer" parent="."]
+wait_time = 3.0
+one_shot = true
+autostart = false
+
+[connection signal="timeout" from="LifetimeTimer" to="." method="_on_lifetime_timer_timeout"]

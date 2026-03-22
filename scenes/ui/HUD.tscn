@@ -1,0 +1,147 @@
+[gd_scene format=3 uid="uid://cst605ite71bf"]
+
+[ext_resource type="Script" path="res://scenes/ui/HUD.gd" id="1_hud"]
+[ext_resource type="PackedScene" path="res://scenes/ui/HotbarSlot.tscn" id="2_hs"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bar_bg"]
+bg_color = Color(0.08, 0.08, 0.15, 0.85)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hp"]
+bg_color = Color(0.78, 0.18, 0.18, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_sp"]
+bg_color = Color(0.18, 0.68, 0.28, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_xp"]
+bg_color = Color(0.88, 0.78, 0.1, 1)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+
+[node name="HUD" type="CanvasLayer"]
+layer = 1
+script = ExtResource("1_hud")
+
+[node name="TopBar" type="MarginContainer" parent="."]
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 38.0
+grow_horizontal = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 6
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 4
+
+[node name="HBoxContainer" type="HBoxContainer" parent="TopBar"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="HealthBar" type="ProgressBar" parent="TopBar/HBoxContainer"]
+custom_minimum_size = Vector2(200, 18)
+layout_mode = 2
+max_value = 100.0
+value = 100.0
+theme_override_styles/background = SubResource("StyleBoxFlat_bar_bg")
+theme_override_styles/fill = SubResource("StyleBoxFlat_hp")
+
+[node name="StaminaBar" type="ProgressBar" parent="TopBar/HBoxContainer"]
+custom_minimum_size = Vector2(160, 14)
+layout_mode = 2
+max_value = 100.0
+value = 100.0
+theme_override_styles/background = SubResource("StyleBoxFlat_bar_bg")
+theme_override_styles/fill = SubResource("StyleBoxFlat_sp")
+
+[node name="XPBar" type="ProgressBar" parent="TopBar/HBoxContainer"]
+custom_minimum_size = Vector2(120, 10)
+layout_mode = 2
+max_value = 100.0
+value = 0.0
+show_percentage = false
+theme_override_styles/background = SubResource("StyleBoxFlat_bar_bg")
+theme_override_styles/fill = SubResource("StyleBoxFlat_xp")
+
+[node name="HotbarRoot" type="CenterContainer" parent="."]
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -192.0
+offset_top = -58.0
+offset_right = 192.0
+offset_bottom = -4.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="HotbarRow" type="HBoxContainer" parent="HotbarRoot"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="AmmoLabel" type="Label" parent="."]
+anchors_preset = 4
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -110.0
+offset_top = -60.0
+offset_right = -8.0
+offset_bottom = -38.0
+grow_horizontal = 0
+grow_vertical = 0
+visible = false
+horizontal_alignment = 2
+theme_override_font_sizes/font_size = 13
+
+[node name="MessageContainer" type="VBoxContainer" parent="."]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -200.0
+offset_top = 44.0
+offset_right = 200.0
+offset_bottom = 200.0
+grow_horizontal = 2
+alignment = 1
+
+[node name="LevelLabel" type="Label" parent="."]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -90.0
+offset_top = 6.0
+offset_right = -6.0
+offset_bottom = 24.0
+grow_horizontal = 0
+text = "Lv. 1"
+horizontal_alignment = 2
+theme_override_font_sizes/font_size = 12
+theme_override_colors/font_color = Color(0.88, 0.77, 0.42, 1)
+
+[node name="ClockLabel" type="Label" parent="."]
+anchors_preset = 2
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -30.0
+offset_top = 6.0
+offset_right = 30.0
+offset_bottom = 22.0
+grow_horizontal = 2
+text = "06:00"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 11
+theme_override_colors/font_color = Color(1, 1, 1, 0.7)

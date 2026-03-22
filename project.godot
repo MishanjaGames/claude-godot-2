@@ -23,6 +23,11 @@ GameManager="*uid://b46trl3cuj1gq"
 SaveManager="*uid://c0wtf3whrfi5t"
 InventoryManager="*uid://1b32dh27r24g"
 CombatManager="*uid://bioom7enlawkw"
+QuestManager="*uid://j51gj07udfei"
+AudioManager="*uid://cjhx4hrjhj3op"
+DayNightCycle="*uid://cgfh8q1fbbx1c"
+CraftingManager="*uid://brgl6lfgl4vjr"
+AchievementManager="*uid://12tx4i6hnsha"
 
 [display]
 
