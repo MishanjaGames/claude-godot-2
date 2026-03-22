@@ -21,7 +21,8 @@ Full item hierarchy under ItemData (base Resource): ConsumableData, WeaponData (
 
 # Phase 6 — UI Layer
 HUD, InventoryUI, DialogueBox, PauseMenu, SettingsScreen — all rebuilt to read from the new autoloads. Minimap (simple: render chunk grid as tiny coloured pixels into a SubViewport).
-Phase 7 — Save System
+
+#Phase 7 — Save System
 SaveManager serialises: player position + stats, inventory, world seed + which chunks have been modified and how (delta saves — only changed chunks, not the whole world), placed structures state (open doors, looted chests), NPC states.
 
 *Generated for Godot 4.6.1 (stable). All scripts use GDScript with @export annotations and Godot 4 API only. No deprecated methods used.*

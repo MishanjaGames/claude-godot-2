@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="KeyItemData" format=3 uid="uid://3phq2ydcr2k8"]
+
+[ext_resource type="Script" uid="uid://lq8bqgormdv2" path="res://scripts/data/KeyItemData.gd" id="1_x48lv"]
+
+[resource]
+script = ExtResource("1_x48lv")
+id = "key-item_mysterious-shard"
+display_name = "Mysterious Shard"
+description = "Mysterious Shard"
+stackable = true
+max_stack = 255
+metadata/_custom_type_script = "uid://lq8bqgormdv2"

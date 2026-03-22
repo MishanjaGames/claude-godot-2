@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="HarvestableData" format=3 uid="uid://3xasfdeba48c"]
+
+[ext_resource type="Script" uid="uid://byj4w3u6erag" path="res://scripts/data/HarvestableData.gd" id="1_p840u"]
+
+[resource]
+script = ExtResource("1_p840u")
+id = "tree_oak"
+display_name = "Oak Tree"
+max_health = 4
+drop_table_id = "drop_tree"
+metadata/_custom_type_script = "uid://byj4w3u6erag"

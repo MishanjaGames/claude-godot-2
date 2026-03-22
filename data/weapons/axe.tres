@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="WeaponData" format=3 uid="uid://dmybpdppyp31e"]
+
+[ext_resource type="Script" uid="uid://bc2h6t55udgfq" path="res://scripts/data/StatusEffect.gd" id="1_ev13c"]
+[ext_resource type="Script" uid="uid://0aq6s1l7luew" path="res://scripts/data/WeaponData.gd" id="2_cxo3c"]
+
+[resource]
+script = ExtResource("2_cxo3c")
+damage = 15
+attack_speed = 0.75
+attack_range = 24.0
+knockback_force = 96.0
+id = "weapon_axe"
+display_name = "Axe"
+description = "An axe"
+metadata/_custom_type_script = "uid://0aq6s1l7luew"

@@ -38,6 +38,7 @@ func setup(key_id: String) -> void:
 	key_item_id = key_id
 
 func _ready() -> void:
+	add_to_group("door")
 	interact_area.body_entered.connect(_on_body_entered)
 	interact_area.body_exited.connect(_on_body_exited)
 	interact_label.visible = false

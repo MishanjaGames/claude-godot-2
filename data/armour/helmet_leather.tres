@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="ArmourData" format=3 uid="uid://dfg1wxx7t2du"]
+
+[ext_resource type="Script" uid="uid://bc2h6t55udgfq" path="res://scripts/data/StatusEffect.gd" id="1_o4k30"]
+[ext_resource type="Script" uid="uid://60n7igh5yl30" path="res://scripts/data/ArmourData.gd" id="2_82m0t"]
+
+[resource]
+script = ExtResource("2_82m0t")
+slot = 0
+id = "leather_healmet"
+display_name = "Leather Helmet"
+description = "Leather Helmet"
+metadata/_custom_type_script = "uid://60n7igh5yl30"

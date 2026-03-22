@@ -22,6 +22,7 @@ WorldManager="*uid://clc1kfyb7fea1"
 GameManager="*uid://b46trl3cuj1gq"
 SaveManager="*uid://c0wtf3whrfi5t"
 InventoryManager="*uid://1b32dh27r24g"
+CombatManager="*uid://bioom7enlawkw"
 
 [display]
 

@@ -57,6 +57,7 @@ func _ready() -> void:
 	# Apply save data if continuing.
 	if SaveManager.has_save():
 		SaveManager.apply_save(_player)
+		SaveManager.apply_object_states()
 
 	# Fade in.
 	if fade_overlay and fade_overlay.has_method("fade_in"):

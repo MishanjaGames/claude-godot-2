@@ -34,6 +34,7 @@ func setup(table_id: String) -> void:
 	drop_table_id = table_id
 
 func _ready() -> void:
+	add_to_group("chest")
 	interact_area.body_entered.connect(_on_body_entered)
 	interact_area.body_exited.connect(_on_body_exited)
 	interact_label.visible = false

@@ -21,6 +21,7 @@ var _entities_inside: Array[Node] = []
 @onready var objects:       Node2D = $Objects
 
 func _ready() -> void:
+	add_to_group("structure")
 	interior_area.body_entered.connect(_on_body_entered)
 	interior_area.body_exited.connect(_on_body_exited)
 
